@@ -2,6 +2,7 @@
 import { useState } from '@/hooks/useState';
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router';
+import { random } from 'xe-utils';
 const {role , iconStyle ,date } = useState({
   role:'' as 'user' | 'approver' | 'FO',
   iconStyle:{},
@@ -12,7 +13,7 @@ const navigateToApplicationPage = (type:'to be handled' | 'processing' | 'Proces
   switch (role.value) {
     case 'user':
       router.push({
-        path:'viewOfMyapplication',
+        path:'viewOfMyApplication',
         query:{
           type
         }
@@ -38,9 +39,13 @@ const navigateToApplicationPage = (type:'to be handled' | 'processing' | 'Proces
       break;
   }
 }
+const navigateToApplicationByCalender = (){
+  
+}
 
-
+const num = random(1,30)
 onMounted(() => {
+  // @ts-ignore
   role.value = localStorage.getItem('role')!
 })
 
@@ -142,9 +147,25 @@ onMounted(() => {
       </div>
 
     </div>
-    <div style="width: 100%">
-      <div class="card" style="width: 100%;min-width: 460px;">
-        <el-calendar v-model="date" />
+    <div >
+      <div class="card" style="width: 100%">
+        <el-calendar v-model="date" >
+          <template #date-cell="{ data }"  >
+            <div @click="" style="font-size: 13px;">
+              <div style="margin-bottom: 10px;" :class="data.isSelected ? 'is-selected' : ''">
+                {{ data.day.split('-').slice(1).join('-') }}
+              </div>
+              <div >
+                <el-icon><CircleCheck /></el-icon>
+                Processed: {{ num}}
+              </div>
+              <div>
+                <el-icon><MessageBox /></el-icon>
+                Received: {{ num }}
+              </div>
+            </div>
+          </template>
+        </el-calendar>
       </div>
     </div>
   </div>

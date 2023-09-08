@@ -106,10 +106,11 @@ async function insertRow(tableName:'payment' | 'reimbursement',copyRow?:any) {
       currencyType: paymentTableData.value[paymentTableData.value.length-1].paymentCurrencyVal
     })
     dataList.value.push({
-      title:payeeName,
-      clickAction:()=> container.value?.parentElement?.scrollTo({'behavior':'smooth',top:offset}),
-      top:offset,
-      paddingLeft:20,
+        title: payeeName,
+        clickAction: () => container.value?.parentElement?.scrollTo({ 'behavior': 'smooth', top: offset }),
+        top: offset,
+        paddingLeft: 20,
+        complete: false
     })
   }
   reMeasure(informationForPaymentTableData.value)
@@ -147,11 +148,12 @@ async function copyRow(tableName:'payment' | 'reimbursement'){
     currencyType: row.paymentCurrencyVal
   })
   dataList.value.push({
-    title:payeeName,
-    clickAction:()=> container.value?.parentElement?.scrollTo({'behavior':'smooth',top:offset}),
-    top:offset,
-    paddingLeft:20,
-  })
+title: payeeName,
+clickAction: () => container.value?.parentElement?.scrollTo({ 'behavior': 'smooth', top: offset }),
+top: offset,
+paddingLeft: 20,
+complete: false
+})
   onPayeeNameChange(paymentTableData.value.length-1)
   reMeasure(informationForPaymentTableData.value)
   ElMessage('Copy Row successfully')

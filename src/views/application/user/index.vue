@@ -17,6 +17,7 @@ import { storeToRefs } from "pinia"
 import { useRoute } from "vue-router"
 import { getGoodOrServiceCached } from "@/utils/cache/local-storage"
 import {  applicationStatusSelectionForUser , applicationType as applicationTypeT } from '@/constants/selection'
+import { ShareLogic } from '../shareLogic'
 
 defineOptions({
   // 命名当前组件
@@ -32,46 +33,19 @@ const { roles  } = storeToRefs(useUserStore())
 const { tableData, cachedData,applicationOptions, option ,applicationType, applicationTypeVal ,dialogVisible } = useState({
   tableData: [] as unknown as ApplicationData[],
   cachedData: [] as unknown as ApplicationData[],
-  option: "All applications",
+  option: "All applications" as ApplicationTypeInForm,
   applicationOptions: applicationStatusSelectionForUser,
   applicationTypeVal: 'Good/Service',
   applicationType:applicationTypeT,
   dialogVisible:false,
 })
-
+const shareLogic = new ShareLogic(cachedData,tableData,paginationData)
 // tools
 const formInline = reactive({
   status:'',
   content:''
 })
-const onSelectionChange = (v:ApplicationTypeInForm)=>{
-  switch (v) {
-    case 'All applications':
-      tableData.value = [...cachedData.value]
-      break;
-    case 'Waiting for submission':
-      tableData.value = cachedData.value.filter(v=>v.status === 'draft')
-      break;
-    case 'Submitted applications':
-      tableData.value = cachedData.value.filter(v=>v.status === 'Submitted')
-      break;
-    case 'Rejected applications':
-      tableData.value = cachedData.value.filter(v=>v.status === 'rejected')
-      break;
-    case 'Applications to be amended':
-      tableData.value = cachedData.value.filter(v=>v.status === 'amended')
-      break;
-    case 'Approved':
-      tableData.value = cachedData.value.filter(v=>v.status === 'Approved')
-      break;
-    case 'Payment Process':
-      tableData.value = cachedData.value.filter(v=>v.status === 'Payment Process')
-      break;
-    default:
-      break;
-  }
-  paginationData.total = tableData.value.length
-}
+
 const getTableData = () => {
   loading.value = false
 }
@@ -91,19 +65,7 @@ const handleCreate = () => {
       break;
   }
 }
-function handleReview(index:any,row:any){
-  console.log(index);
-
-  const appId = tableData.value[index].applicationId
-  router.push({
-    path:'/applicationReview',
-    query:{
-      appId
-    }
-  })
-}
-
-function handleDraft(index:any){
+const handleDraft = (index:any)=>{
   const appId = tableData.value[index].applicationId
   router.push({
     path:'/form/goodOrService',
@@ -112,7 +74,6 @@ function handleDraft(index:any){
     }
   })
 }
-
 const handleClickCreateBtn = ()=>{
   // const isExist = tableData.value.findIndex(v=>v.status === 'draft') !== -1
   // if(isExist){
@@ -124,39 +85,6 @@ const handleClickCreateBtn = ()=>{
   //   return
   // }
   dialogVisible.value = true
-}
-
-function navigateToTimeline(index:number){
-  const appId = tableData.value[index].applicationId
-  router.push({
-    path:'/timeline',
-    query:{
-      appId
-    }
-  })
-}
-
-function onReset(){
-  tableData.value = cachedData.value
-}
-
-const searchEvent = () => {
-  const filterVal = String(formInline.content).trim().toLowerCase()
-  if (filterVal) {
-    const filterRE = new RegExp(filterVal, 'gi')
-    const searchProps = ['applicationType', 'subject', 'status','submissionDate','applicationId']
-    const rest = cachedData.value.filter(item => searchProps.some(key => String(item[key]).toLowerCase().indexOf(filterVal) > -1))
-    tableData.value = rest.map(row => {
-      const item = Object.assign({}, row)
-      searchProps.forEach(key => {
-        item[key] = String(item[key]).replace(filterRE, match => `<span class="keyword-lighten">${match}</span>`)
-
-      })
-      return item
-    })
-  } else {
-    tableData.value = cachedData.value
-  }
 }
 type Type = 'to be handled' | 'processing' | 'Processed'
 const navigateFromHomePage = () =>{
@@ -181,14 +109,10 @@ const navigateFromHomePage = () =>{
       break;
   }
 }
-
 onActivated(()=>{
   console.log('come in!');
-
 })
-
 onMounted(() => {
-
   const data = getGoodOrServiceCached()
   if(data){
     const applications = data
@@ -219,16 +143,16 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
     <div class="header card" >
       <el-form  :size="'default'" :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item >
-          <el-select @change="onSelectionChange" v-model="option"  placeholder="Select">
+          <el-select @change="shareLogic.onSelectionChange(option)" v-model="option"  placeholder="Select">
             <el-option  v-for="item in applicationOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item >
-          <vxe-input v-model="formInline.content" type="search" placeholder="Global search" @keyup="searchEvent"></vxe-input>
+          <vxe-input v-model="formInline.content" type="search" placeholder="Global search" @keyup="()=>shareLogic.searchEvent(formInline.content)"></vxe-input>
         </el-form-item>
         <el-form-item>
           <!-- <el-button type="primary" @click="onSubmit">Search</el-button> -->
-          <el-button type="primary" @click="onReset">Reset</el-button>
+          <el-button type="primary" @click="shareLogic.onReset">Reset</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -258,14 +182,14 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
                 <el-button
                     size="small"
                     :type="'primary'"
-                    @click="handleReview( rowIndex, row)"
+                    @click="shareLogic.handleReviewApplication( rowIndex, router)"
                   >
                   Review
                 </el-button>
                 <el-button
                     size="small"
                     :type="'success'"
-                    @click="navigateToTimeline(rowIndex)"
+                    @click="shareLogic.navigateToTimeline(rowIndex,router)"
                   >
                   Progress
                 </el-button>

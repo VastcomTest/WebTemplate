@@ -20,6 +20,7 @@ import CacheKey from "@/constants/cache-key"
 import { onUpdated } from "vue"
 import { onActivated } from "vue"
 import { applicationStatusSelectionForFO } from '@/constants/selection'
+import { ShareLogic } from "../shareLogic"
 defineOptions({
   // 命名当前组件
   name: "ApplicationForFO",
@@ -33,61 +34,20 @@ const { roles  } = storeToRefs(useUserStore())
 const { tableData, cachedData,applicationOptions,rejectReason, option,dialogVisible ,currentRow } = useState({
   tableData: [] as  ApplicationData[],
   cachedData: [] as ApplicationData[],
-  option: "All applications",
+  option: "All applications" as ApplicationTypeInForm,
   applicationOptions: applicationStatusSelectionForFO,
   dialogVisible:false,
   currentRow:{} as ApplicationData,
   rejectReason:''
 })
-
+const shareLogic = new ShareLogic(cachedData,tableData,paginationData)
 const formInline = reactive({
   status:'',
   content:''
 })
 
-const onSelectionChange = (v:ApplicationTypeInForm)=>{
-  switch (v) {
-    case 'All applications':
-      tableData.value = [...cachedData.value]
-      break;
-    case 'Waiting for submission':
-      tableData.value = cachedData.value.filter(v=>v.status === 'draft')
-      break;
-    case 'Submitted applications':
-      tableData.value = cachedData.value.filter(v=>v.status === 'Submitted')
-      break;
-    case 'Rejected applications':
-      tableData.value = cachedData.value.filter(v=>v.status === 'rejected')
-      break;
-    case 'Applications to be amended':
-      tableData.value = cachedData.value.filter(v=>v.status === 'amended')
-      break;
-    case 'Approved':
-      tableData.value = cachedData.value.filter(v=>v.status === 'Approved')
-      break;
-    case 'Payment Process':
-      tableData.value = cachedData.value.filter(v=>v.status === 'Payment Process')
-      break;
-    default:
-      break;
-  }
-  console.log(v);
-
-  paginationData.total = tableData.value.length
-
-}
 const getTableData = () => {
   loading.value = false
-}
-
-function handleReviewApplication(index:any,row:any){
-  const appId = tableData.value[index].applicationId
-  router.push({
-    path:'/approveForFO',
-    query:{
-      appId
-    }
-  })
 }
 
 function handlePrint(index:number){
@@ -97,24 +57,6 @@ function handlePrint(index:number){
   // })
 }
 
-const searchEvent = () => {
-  const filterVal = String(formInline.content).trim().toLowerCase()
-  if (filterVal) {
-    const filterRE = new RegExp(filterVal, 'gi')
-    const searchProps = ['applicationType', 'subject', 'status','submissionDate','applicationId']
-    const rest = cachedData.value.filter(item => searchProps.some(key => String(item[key]).toLowerCase().indexOf(filterVal) > -1))
-    tableData.value = rest.map(row => {
-      const item = Object.assign({}, row)
-      searchProps.forEach(key => {
-        item[key] = String(item[key]).replace(filterRE, match => `<span class="keyword-lighten">${match}</span>`)
-
-      })
-      return item
-    })
-  } else {
-    tableData.value = cachedData.value
-  }
-}
 
 type Type = 'to be handled' | 'processing' | 'Processed'
 const navigateFromHomePage = () =>{
@@ -127,7 +69,7 @@ const navigateFromHomePage = () =>{
       break;
     case 'Processed':
       tableData.value =  tableData.value.filter(v=>{
-        return v.status === 'rejected' || v.status === 'Payment Process' 
+        return v.status === 'rejected' || v.status === 'Payment Process'
       })
       break;
     default:
@@ -169,16 +111,16 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
       <div class="toolbar-wrapper card">
         <el-form  :size="'default'" :inline="true" :model="formInline" class="demo-form-inline">
           <el-form-item >
-            <el-select @change="onSelectionChange" v-model="option"  placeholder="Select">
+            <el-select @change="shareLogic.onSelectionChange(option)" v-model="option"  placeholder="Select">
               <el-option  v-for="item in applicationOptions" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item >
-            <vxe-input v-model="formInline.content" type="search" placeholder="Global search" @keyup="searchEvent"></vxe-input>
+            <vxe-input v-model="formInline.content" type="search" placeholder="Global search" @keyup="shareLogic.searchEvent(formInline.content)"></vxe-input>
           </el-form-item>
           <el-form-item>
             <!-- <el-button type="primary" @click="onSubmit">Search</el-button> -->
-            <el-button type="primary" @click="onReset">Reset</el-button>
+            <el-button type="primary" @click="shareLogic.onReset">Reset</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -202,14 +144,14 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
                 <el-button
                     size="small"
                     :type="'primary'"
-                    @click="handleReviewApplication( rowIndex, row)"
+                    @click="shareLogic.handleReviewApplication( rowIndex, row)"
                   >
                   Review
                 </el-button>
                 <el-button
                     size="small"
                     :type="'success'"
-                    @click="navigateToTimeline(rowIndex)"
+                    @click="shareLogic.navigateToTimeline(rowIndex,router)"
                   >
                   Progress
                 </el-button>

@@ -114,3 +114,9 @@ export function getGoodOrServiceCached():GoodOrService[] | undefined{
   const jsonStr = localStorage.getItem(CacheKey.GOOD_OR_SERVICE)
   if(jsonStr) return JSON.parse(jsonStr)
 }
+
+export type Role = 'FO' | 'approver' | 'user'
+// role
+export function getRole():Role{
+  return localStorage.getItem('role')! as Role
+}
