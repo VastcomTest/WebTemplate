@@ -88,6 +88,7 @@ export function useSideNavigationBar( temp?:DataList){
           })
         },
         top:offsetInfo,
+        paddingLeft:20,
         complete:false
       })
 
@@ -101,10 +102,12 @@ export function useSideNavigationBar( temp?:DataList){
             })
           },
           top:paymentRefs.value[index].offsetTop,
-          paddingLeft:20,
+          paddingLeft:17,
           complete:false
         })
       })
+
+
     }
 
     async function reMeasure(informationForPayment:InformationForPayment[]){
@@ -141,27 +144,27 @@ export function useSideNavigationBar( temp?:DataList){
         complete:statusMap.get('Payment')
       })
 
-      offsetPayment = reimbursementContainer.value?.offsetTop! - 180
+      let offsetReim = reimbursementContainer.value?.offsetTop!
       dataList.value.push({
         title:'Reimbursement',
-        top:offsetPayment,
+        top:offsetReim,
         clickAction:()=>{
           container.value?.parentElement?.scrollTo({
             behavior:'smooth',
-            top:offsetPayment
+            top:offsetReim
           })
         },
         complete:statusMap.get('Reimbursement')
       })
 
-      offsetPayment = informationForPaymentContainer.value?.offsetTop!
+      let offsetInfo = informationForPaymentContainer.value?.offsetTop!
       dataList.value.push({
         title:'Information for payment',
-        top:offsetPayment,
+        top:offsetInfo,
         clickAction:()=>{
           container.value?.parentElement?.scrollTo({
             behavior:'smooth',
-            top:offsetPayment,
+            top:offsetInfo,
           })
         },
         complete:statusMap.get('Information for payment'),
@@ -181,6 +184,8 @@ export function useSideNavigationBar( temp?:DataList){
           complete:statusMap.get(informationForPayment[i].payee)
         })
       }
+
+
     }
 
 

@@ -131,6 +131,10 @@ export function useReimbursement(){
     }
   }
 
+  function setReimbursementRef(Ref:any){
+    reimbursementTableRef.value = Ref
+  }
+
   return {
     reimbursementCurrentIndex,
     reimbursementTableData,
@@ -138,6 +142,7 @@ export function useReimbursement(){
     reimbursementFormRule,
     summaryDataForReim,
     getSummaries,
-    createInstanceReim
+    createInstanceReim,
+    setReimbursementRef
   }
 }

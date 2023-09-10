@@ -14,7 +14,7 @@ export function useInfoForPayment(){
           value:'Information provided in the past',
           label:'Information provided in the past'
         }],
-        paymentMethodVal:'Telegraphic transfer',
+        paymentMethodVal:'Telegraphic transfer (Non-local payee)',
         paymentMethodType:[{
           label:'Telegraphic transfer (Non-local payee)',
           value:'Telegraphic transfer'
@@ -29,7 +29,7 @@ export function useInfoForPayment(){
           value:'Bank Draft'
         }]
       }
-    ],
+    ] as InformationForPayment[]
   })
 
   function createPaymentMethod(){
@@ -43,7 +43,7 @@ export function useInfoForPayment(){
           value:'Information provided in the past',
           label:'Information provided in the past'
         }],
-        paymentMethodVal:'Telegraphic transfer',
+        paymentMethodVal:'Telegraphic transfer (Non-local payee)',
         paymentMethodType:[{
           label:'Telegraphic transfer (Non-local payee)',
           value:'Telegraphic transfer'

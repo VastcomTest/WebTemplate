@@ -3,7 +3,7 @@ import { computed, reactive, ref, watch, watchEffect,  nextTick, onUpdated, onUn
 import { type FormInstance, type FormRules, ElMessage, ElMessageBox, TableColumnCtx } from "element-plus"
 import { Search, Refresh, CirclePlus, Delete, Download, RefreshRight, Paperclip } from "@element-plus/icons-vue"
 import { useState } from "@/hooks/useState"
-import { Good, Payment, Service } from "@/types/entity/goodOrService";
+import { Good, Payment as PaymentEntity, Service } from "@/types/entity/goodOrService";
 import { table } from "console";
 import { cloneDeep, cloneDeepWith, head, uniqueId } from "lodash-es";
 import TelegraphicTransfer from "./TelegraphicTransfer.vue";
@@ -34,6 +34,11 @@ import * as TimelineFn from "@/utils/Timeline";
 import { addAndMerge } from "@/utils/table";
 import { refAutoReset } from "@vueuse/core";
 import ApplicationReview from '@/views/applicationReview/user/index.vue'
+import BasicInfo from '@/components/BasicInfo/index.vue'
+import Payment from '@/components/Payment/index.vue'
+import Reimbursement from '@/components/Reimbursement/index.vue'
+import InfoForPayment from '@/components/InfoForPayment/index.vue'
+import Attachment from '@/components/Attachment/index.vue'
 defineOptions({
   // 命名当前组件
   name: "GoodOrService"
@@ -67,13 +72,13 @@ const {
 const {
   paymentTableData , paymentTableRef , paymentFormRule,
   expandRef , expandRule , summaryDataForPayment,
-  createInstance
+  createInstance,setPaymentRef
 }  = usePaymentState()
 
 // reimbursement
 const {
   reimbursementFormRule , reimbursementTableData ,reimbursementTableRef ,
-  summaryDataForReim,getSummaries , createInstanceReim
+  summaryDataForReim,getSummaries , createInstanceReim,setReimbursementRef
 }  = useReimbursement()
 
 const randomId = random(1000,9999)
@@ -113,6 +118,7 @@ async function insertRow(tableName:'payment' | 'reimbursement',copyRow?:any) {
         complete: false
     })
   }
+  await nextTick()
   reMeasure(informationForPaymentTableData.value)
   ElMessage('insert Row successfully')
 }
@@ -188,10 +194,6 @@ async function deleteRow(tableName:'payment' | 'reimbursement'){
 
 function importData(){
   // to be completed
-}
-
-function beforeUpload(){
-  console.log('upload!');
 }
 
 function saveAllInfo(type:'save' | 'submit' | 'temp' ){
@@ -307,7 +309,8 @@ function onPayeeNameChange(rowIndex:number){
       paddingLeft:20,
       top:0,
       title:v.payeeName,
-      clickAction:()=>{}
+      clickAction:()=>{},
+      complete:false
     }
   }))
 
@@ -442,449 +445,64 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
 
 <template>
   <div ref="container" class="app-container" style="position: relative;padding-top: 100px;">
-    <div :style="{ width : isOpenSideBar  ? 'calc( 100% - 220px )': 'calc( 100% - 58px)' }" class="header"
+    <div class="header" :style="{ width : isOpenSideBar  ? 'calc( 100% - 220px )': 'calc( 100% - 58px)' }"
     style=";z-index: 1000;position: fixed;top: 80px;transform: translateX(-20px)">
-    <div class="box-card" style="height: 60px;padding: 20px 20px;padding-bottom: 0px;background-color:#FFF;box-shadow: 0 5px 5px #CDCDCD;">
+      <div class="box-card" style="height: 60px;padding: 20px 20px;padding-bottom: 0px;background-color:#FFF;box-shadow: 0 5px 5px #CDCDCD;">
         <div style="display: flex;justify-content: space-between;align-items: center;">
           <div style="display: flex;align-items: center;gap: 5px;">
             <el-icon><Edit /></el-icon>
             <div>Editing</div>
           </div>
           <div style="display: flex;">
-            <el-button type="primary"     @click="isOpen = true" >Submit</el-button>
-            <el-button type="primary"     @click="saveAllInfo('save')" >Save</el-button>
+            <el-button type="primary"   @click="isOpen = true" >Submit</el-button>
+            <el-button type="primary"   @click="saveAllInfo('save')" >Save</el-button>
           </div>
         </div>
       </div>
     </div>
-    <el-card  shadow="never" class="application-base-info" style="margin-bottom: 20px;">
-      <div style="width: 70%;flex-direction: column;">
-        <div style="display: flex;justify-content: space-between;">
-            <h4 style="font-size: 20px;" >Basic Info</h4>
-            <div class="item" style="display: flex;align-items: center;">
-                <div style="margin-right: 20px;">Passport / ID Copy</div>
-                <el-upload
-                    v-model:file-list="fileTableData.passportOrIDCopy"
-                    class="upload-demo"
-                    style="display:flex;align-items:center"
-                    multiple
-                    :auto-upload="false"
-                    :before-upload="beforeUpload"
-                  >
-                  <el-icon ><Paperclip /></el-icon>
-                </el-upload>
-            </div>
-          </div>
-        <el-form
-          ref="basicFormRef"
-          :rules="basicFormRule"
-          :model="basicForm"
-          class="demo-basicForm"
-          label-position="left"
-          label-width="170px"
-          status-icon
-        >
-          <div style="display: flex;justify-content: space-between;">
-            <el-form-item   label="Date" prop="date" style="margin-right: 20px;">
-              <el-input  :disabled="true" size="small" v-model="basicForm.date" />
-            </el-form-item>
-            <el-form-item label="Staff Name" prop="staffName">
-              <el-input  :disabled="true"  size="small" v-model="basicForm.staffName" />
-            </el-form-item>
-          </div>
-          <div style="display: flex;justify-content: space-between;">
-            <el-form-item label="BR No" prop="brNo" style="margin-right: 20px;" >
-              <el-input @input="brNoRestrict" size="small" v-model="basicForm.brNo" />
-            </el-form-item>
-            <el-form-item label="Alternate Contact Person" prop="alternateContactPerson">
-              <el-input  size="small" v-model="basicForm.alternateContactPerson" />
-            </el-form-item>
-          </div>
-          <div style="display: flex;justify-content: space-between;">
-            <el-form-item label="Funding Source" prop="fundingSourceVal" style="margin-right: 20px;">
-              <el-select  size="small" v-model="basicForm.fundingSourceVal"  placeholder="Select" >
-                <el-option
-                  v-for="item in basicForm.fundingSource"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="Faculty / Department " prop="facultyOrDepartmentVal" >
-              <el-select  size="small" v-model="basicForm.facultyOrDepartmentVal"  placeholder="Select" >
-                <el-option
-                  v-for="item in basicForm.facultyOrDepartment"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-          </div>
-          <el-form-item label="Subject" prop="subject">
-              <el-input size="small" v-model="basicForm.subject" />
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-card>
+    <BasicInfo
+      :fileTableData="fileTableData"
+      :basicForm="basicForm"
+      :basicFormRule="basicFormRule"
+      :brNoRestrict="brNoRestrict"
+    />
+
     <div ref="paymentContainer" class="payment">
-      <el-card   shadow="never"  style="margin-bottom: 20px;">
-      <div style="width: 100%;flex-direction: column;">
-        <div style="width: 100%;justify-content: space-between;display: flex;flex-direction: column;margin-bottom: 20px;">
-          <div style="display: flex;justify-content: space-between;">
-            <h4 style="font-size: 20px;" >Payment</h4>
-            <div class="item" style="display: flex;align-items: center;">
-                <div style="margin-right: 20px;">Invoice / Receipts</div>
-                <el-upload
-                    v-model:file-list="fileTableData.invoicedOrReceipts"
-                    class="upload-demo"
-                    style="display:flex;align-items:center"
-                    multiple
-                    :auto-upload="false"
-                    :before-upload="beforeUpload"
-                  >
-                  <el-icon ><Paperclip /></el-icon>
-                </el-upload>
-            </div>
-          </div>
-          <div style="display: flex;align-items: center;">
-            <el-button @click="insertRow('payment')" type="primary" >Insert row</el-button>
-            <el-button @click="copyRow('payment')" type="primary" >Copy row</el-button>
-            <el-button @click="deleteRow('payment')" type="primary" >Delete row</el-button>
-            <el-button @click="importData" type="primary" >Import Data</el-button>
-          </div>
-        </div>
-
-      </div>
-      <div>
-        <vxe-table
-          ref="paymentTableRef"
-          border
-          keepSource
-          show-overflow
-          :expand-config="{ visibleMethod:({row})=> row.payeeTypeVal === 'Individual' }"
-          :data="paymentTableData"
-          :edit-rules="paymentFormRule"
-          :column-config="{resizable: true}"
-          :edit-config="{trigger: 'click', mode:'row',showStatus:true}"
-        >
-
-          <vxe-column type="checkbox" width="80"></vxe-column>
-          <vxe-column type="seq" :title="'No.'" width="60"></vxe-column>
-          <vxe-column field="expenseTypeVal" width="150" title="Expense Type" :edit-render="{autofocus: '.vxe-input--inner'}">
-            <template #edit="{ row }">
-              <el-select  size="small"  v-model="row.expenseTypeVal"  placeholder="Select" >
-                  <el-option
-                    v-for="item in row.expenseType"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-              </el-select>
-            </template>
-          </vxe-column>
-          <vxe-column field="item" title="Item" width="100" :edit-render="{}">
-            <template #edit="scope">
-                <vxe-input v-model="scope.row.item" type="text" ></vxe-input>
-            </template>
-          </vxe-column>
-          <vxe-column field="servicePeriod" title="Service Period" width="150" :edit-render="{}">
-            <template #edit="scope">
-              <div style="display: flex; align-items: center">
-                  <el-date-picker
-                    :disabled="scope.row.expenseTypeVal === 'Good'"
-                    size="small"
-                    v-model="scope.row.servicePeriod"
-                    type="daterange"
-                    range-separator="To"
-                    start-placeholder="Start date"
-                    end-placeholder="End date"
-                  />
-              </div>
-            </template>
-          </vxe-column>
-          <vxe-column field="currency"  title="Currency" width="150" :edit-render="{}">
-            <template #edit="scope">
-                <el-input  size="small" type="text" v-model="scope.row.currency" />
-            </template>
-          </vxe-column>
-          <vxe-column field="amount"  title="Amount" width="150" :edit-render="{}">
-            <template #edit="scope">
-                <el-input  size="small" type="text" v-model="scope.row.amount" />
-            </template>
-          </vxe-column>
-          <vxe-column field="paymentCurrencyVal" title="Payment Currency" width="190"  :edit-render="{autofocus: '.vxe-input--inner'}">
-            <template #edit="{ row }">
-              <el-select  size="small"  v-model="row.paymentCurrencyVal"  placeholder="Select" >
-                  <el-option
-                    v-for="item in row.paymentCurrency"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-              </el-select>
-            </template>
-          </vxe-column>
-          <vxe-column field="payeeTypeVal" title="Payee Type" width="150"  :edit-render="{}">
-            <template #edit="{ row ,rowIndex }">
-              <el-select  @change="()=>toggleRowExpand(row)" size="small"  v-model="row.payeeTypeVal"  placeholder="Select" >
-                  <el-option
-                    v-for="item in row.payeeType"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-              </el-select>
-            </template>
-          </vxe-column>
-          <vxe-column field="payeeName" title="PayeeName" width="150" :edit-render="{}">
-            <template #edit="scope">
-                <el-input @input="v=>onPayeeNameChange(scope.rowIndex)" size="small" type="text" v-model="scope.row.payeeName" />
-            </template>
-          </vxe-column>
-          <vxe-column field="staffNumber" title="Staff / Student Number" width="250" :edit-render="{}">
-            <template #edit="scope">
-                <el-input :disabled="scope.row.payeeTypeVal === 'Company' || scope.row.payeeTypeVal === 'Individual'" size="small" type="text" v-model="scope.row.staffNumber" />
-            </template>
-          </vxe-column>
-          <vxe-column type="expand"  width="30"  :edit-render="{}">
-            <template #content="{ row , rowIndex }">
-               <div style="padding-left: 20px;padding-top: 20px;max-width: 500px;;">
-                <el-form :rules="expandRule" ref="expandRef" :model="row" :label-position="'left'" label-width="130">
-                  <el-form-item prop="radio" style="display: flex;">
-                    <el-radio v-model="row.radio" label="1">Macau Civil Servant</el-radio>
-                    <el-radio v-model="row.radio" label="2">Service provided in Macau</el-radio>
-                  </el-form-item>
-                  <el-form-item label="ID/Passport No." prop="IDOrPassportNumber">
-                    <el-input v-model="row.IDOrPassportNumber" />
-                  </el-form-item>
-                  <el-form-item label="Issuance in" prop="issuanceIn">
-                    <el-input v-model="row.issuanceIn" />
-                  </el-form-item>
-                  <el-form-item label="Email" prop="email">
-                    <el-input v-model="row.email" />
-                  </el-form-item>
-                  <el-form-item label="Contact No." prop="contactNumber">
-                    <el-input v-model="row.contactNumber" />
-                  </el-form-item>
-                </el-form>
-               </div>
-            </template>
-          </vxe-column>
-        </vxe-table>
-      </div>
-      <div style="padding-bottom: 20px;"></div>
-      <!--  bottom information -->
-      <div style="display: flex;align-items: center;justify-content: center">
-        <div style="margin-right: 20px;">Summary of payee:</div>
-        <el-table  :data="summaryDataForPayment"  style="width: 490px;">
-          <el-table-column prop="currencyType" label="currency" width="180" />
-          <el-table-column prop="amount" label="amount" width="180" />
-          <el-table-column prop="payeeName" label="payeeName" width="130" />
-        </el-table>
-      </div>
-    </el-card>
+      <Payment
+        :fileTableData="fileTableData"
+        :insertRow="insertRow"
+        :copyRow="copyRow"
+        :importData="importData"
+        :deleteRow="deleteRow"
+        :paymentTableData="paymentTableData"
+        :expandRule="expandRule"
+        :summaryDataForPayment="summaryDataForPayment"
+        :paymentFormRule="paymentFormRule"
+        :toggleRowExpand="toggleRowExpand"
+        :onPayeeNameChange="onPayeeNameChange"
+        :setPaymentRef="setPaymentRef"
+      />
     </div>
+
     <div ref="reimbursementContainer" class="reimbursement" >
-      <el-card  shadow="never" style="margin-bottom: 20px;">
-      <div style="width: 100%;flex-direction: column;">
-        <div style="width: 100%;justify-content: space-between;display: flex;flex-direction: column;margin-bottom: 20px;">
-          <div style="display: flex;justify-content: space-between;">
-            <h4 style="font-size: 20px;" >Reimbursement</h4>
-            <div class="item" style="display: flex;align-items: center;">
-                <div style="margin-right: 20px;">Actual exchange rate justification</div>
-                <el-upload
-                    v-model:file-list="fileTableData.actualExchangeRateJustification"
-                    class="upload-demo"
-                    style="display:flex;align-items:center"
-                    multiple
-                    :auto-upload="false"
-                    :before-upload="beforeUpload"
-                  >
-                  <el-icon ><Paperclip /></el-icon>
-                </el-upload>
-            </div>
-          </div>
-          <div style="display: flex;align-items: center;">
-            <el-button @click="insertRow('reimbursement')" type="primary" >Insert row</el-button>
-            <el-button @click="copyRow('reimbursement')" type="primary" >Copy row</el-button>
-            <el-button @click="deleteRow('reimbursement')" type="primary" >Delete row</el-button>
-            <el-button @click="importData" type="primary" >Import Data</el-button>
-          </div>
-        </div>
-      </div>
-      <vxe-table
-            ref="reimbursementTableRef"
-            border
-            keep-source
-            show-overflow
-            :data="reimbursementTableData"
-            :edit-rules="reimbursementFormRule"
-            :column-config="{resizable: true}"
-            :edit-config="{trigger: 'click', mode:'row',showStatus:true}"
-        >
-          <vxe-column type="checkbox" width="80"></vxe-column>
-          <vxe-column type="seq" :title="'No.'" width="60"></vxe-column>
-          <vxe-column field="expenseTypeVal" width="150" title="Expense Type" :edit-render="{autofocus: '.vxe-input--inner'}">
-            <template #edit="{ row }">
-              <el-select  size="small"  v-model="row.expenseTypeVal"  placeholder="Select" >
-                  <el-option
-                    v-for="item in row.expenseType"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-              </el-select>
-            </template>
-          </vxe-column>
-          <vxe-column field="item" title="Item" width="100" :edit-render="{}">
-            <template #edit="scope">
-                <el-input  size="small" type="text" v-model="scope.row.item" />
-            </template>
-          </vxe-column>
-          <vxe-column field="servicePeriod" title="Service Period" width="150" :edit-render="{}">
-            <template #edit="scope">
-              <div style="display: flex; align-items: center">
-                  <el-date-picker
-                    :disabled="scope.row.expenseTypeVal === 'Good'"
-                    size="small"
-                    v-model="scope.row.servicePeriod"
-                    type="daterange"
-                    range-separator="To"
-                    start-placeholder="Start date"
-                    end-placeholder="End date"
-                  />
-              </div>
-            </template>
-          </vxe-column>
-          <vxe-column field="currency"  title="Currency" width="150" :edit-render="{}">
-            <template #edit="scope">
-                <el-input  size="small" type="text" v-model="scope.row.currency" />
-            </template>
-          </vxe-column>
-          <vxe-column field="amount"  title="Amount" width="150" :edit-render="{}">
-            <template #edit="scope">
-                <el-input  size="small" type="text" v-model="scope.row.amount" />
-            </template>
-          </vxe-column>
-          <vxe-column field="exchangeRateTypeVal" title="Exchange Rate Type " width="200"  :edit-render="{autofocus: '.vxe-input--inner'}">
-            <template #edit="{ row }">
-              <el-select  @change="onExchangeVal(row)" size="small"  v-model="row.exchangeRateTypeVal"  placeholder="Select" >
-                  <el-option
-                    v-for="item in row.exchangeRateType"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-              </el-select>
-            </template>
-          </vxe-column>
-          <vxe-column field="rateDate" title="Rate Date" width="150"  :edit-render="{autofocus: '.vxe-input--inner'}">
-            <template #edit="{ row }">
-              <el-date-picker
-                    size="small"
-                    v-model="row.rateDate"
-                    type="date"
-                  />
-            </template>
-          </vxe-column>
-          <vxe-column field="rate" title="Rate" width="100" :edit-render="{}">
-            <template #edit="scope">
-                <el-input :disabled="scope.row.exchangeRateTypeVal === 'UM default' "  size="small" type="text" v-model="scope.row.rate" />
-            </template>
-          </vxe-column>
-          <vxe-column field="amountInMop" title="Amount in MOP" width="150" :edit-render="{}">
-            <template #edit="scope">
-                <el-input  :disabled="true" size="small" type="text" v-model="scope.row.amountInMop" />
-            </template>
-          </vxe-column>
-          <vxe-column field="payeeTypeVal" title="Payee Type" width="150"  :edit-render="{autofocus: '.vxe-input--inner'}">
-            <template #edit="{ row }">
-              <el-select  size="small"  v-model="row.payeeTypeVal"  placeholder="Select" >
-                  <el-option
-                    v-for="item in row.payeeType"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-              </el-select>
-            </template>
-          </vxe-column>
-          <vxe-column field="payeeName" title="PayeeName" width="150" :edit-render="{}">
-            <template #edit="scope">
-                <el-input  size="small" type="text" v-model="scope.row.payeeName" />
-            </template>
-          </vxe-column>
-          <vxe-column field="staffNumber" title="Staff / Student Number" width="250" :edit-render="{}">
-            <template #edit="scope">
-                <el-input :disabled="scope.row.payeeTypeVal === 'Company' || scope.row.payeeTypeVal === 'Individual'" size="small" type="text" v-model="scope.row.staffNumber" />
-            </template>
-          </vxe-column>
-      </vxe-table>
-      <div style="padding-bottom: 20px;"></div>
-      <!--  bottom information -->
-      <!--  bottom information -->
-      <div style="display: flex;align-items: center;justify-content: center">
-        <div style="margin-right: 20px;">Summary of payee:</div>
-        <el-table  :data="summaryDataForReim"  style="width: 490px;">
-          <el-table-column prop="currencyType" label="currency" width="180" />
-          <el-table-column prop="amount" label="amount" width="180" />
-          <el-table-column prop="payeeName" label="payeeName" width="130" />
-        </el-table>
-      </div>
-      </el-card>
+      <Reimbursement
+        :fileTableData="fileTableData"
+        :insertRow="insertRow"
+        :copyRow="copyRow"
+        :importData="importData"
+        :deleteRow="deleteRow"
+        :reimbursementTableData="reimbursementTableData"
+        :expandRule="expandRule"
+        :summaryDataForReim="summaryDataForReim"
+        :reimbursementFormRule="reimbursementFormRule"
+        :toggleRowExpand="toggleRowExpand"
+        :onPayeeNameChange="onPayeeNameChange"
+        :setReimbursementRef="setReimbursementRef"
+        :onExchangeVal="onExchangeVal"
+      />
     </div>
     <div ref="informationForPaymentContainer" class="informationForPayment">
-      <el-card  shadow="never" class="informationForPayment" style="margin-bottom: 20px;">
-      <div style="width: 70%;flex-direction: column;">
-        <div style="width: 100%;justify-content: space-between;display: flex;flex-direction: column;margin-bottom: 20px;">
-          <h4 style="font-size: 20px;" >Information for payment</h4>
-        </div>
-      </div>
-      <el-table border v-if="informationForPaymentTableData.length!==0" :data="informationForPaymentTableData" style="width: 660px">
-        <el-table-column label="Payee" width="150" >
-          <template #default="scope">
-            <el-input :disabled="true" size="small" type="text" v-model="scope.row.payee" />
-          </template>
-        </el-table-column>
-        <el-table-column label="Bank information" width="160" >
-          <template #default="scope">
-            <div style="display: flex; align-items: center">
-              <el-select v-if="scope.row" size="small"   v-model="scope.row.bankInformationVal"  placeholder="bank information" >
-                <el-option
-                  v-for="item in scope.row.bankInformationType"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="Payment method" width="250" >
-          <template #default="scope">
-            <div style="display: flex; align-items: center">
-              <el-select  :disabled="scope.row.bankInformationVal === 'Information provided in the past' " size="small"   v-model="scope.row.paymentMethodVal"  placeholder="payment method" >
-                <el-option
-                  v-for="item in scope.row.paymentMethodType"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="operation" width="100" >
-          <template #default="scope">
-            <div v-if="scope.row.bankInformationVal !== 'Information provided in the past' " style="display: flex; align-items: center">
-              <el-button :type="'primary'" size="small">edit</el-button>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
-      </el-card>
+      <InfoForPayment :informationForPaymentTableData="informationForPaymentTableData" />
     </div>
     <div ref="paymentRefs" v-for="(item,index) in informationForPaymentTableData" :key="item.id"  >
       <el-card v-if="item && item.bankInformationVal !== 'Information provided in the past'"  shadow="never" class="Payment Method" style="margin-bottom: 20px;">
@@ -900,7 +518,7 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Telegraphic transfer'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Telegraphic transfer (Non-local payee)'"
           />
           <BankDraft
               :beneficiary-name="'Daniel'"
@@ -908,7 +526,7 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Bank Draft'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Bank Draft (Non-local payee)'"
           />
           <AutoPay
               :beneficiary-name="'Daniel'"
@@ -916,101 +534,23 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Auto-pay'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Auto-pay (Local payee)'"
           />
           <CashierOrder
               :beneficiary-name="'Daniel'"
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Cheque/Cashier Order'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Cheque/Cashier Order (Local payee)'"
           />
       </el-card>
     </div>
-    <el-card  shadow="never" class="Attachment" style="margin-bottom: 20px;">
-      <div style="width: 70%;flex-direction: column;">
-        <div style="width: 100%;justify-content: space-between;display: flex;flex-direction: column;margin-bottom: 20px;">
-          <h4 style="font-size: 20px;" >Attachment</h4>
-        </div>
-      </div>
-      <div class="table-list">
-        <el-form ref="fileFormRef" :model="fileTableData" :rules="fileFormRule" label-width="200" label-position="left" status-icon  >
-          <el-form-item label="Proposal" prop="proposal"  >
-            <div class="item" style="display: flex;align-items: center;">
-              <el-upload
-                  v-model:file-list="fileTableData.proposal"
-                  class="upload-demo"
-                  style="display:flex;align-items:center"
-                  multiple
-                  :auto-upload="false"
-                  :before-upload="beforeUpload"
-                >
-                <el-icon ><Paperclip /></el-icon>
-              </el-upload>
-            </div>
-          </el-form-item>
-          <el-form-item label="Invoices/receipts" prop="invoicedOrReceipts"  >
-            <div class="item" style="display: flex;align-items: center;">
-              <el-upload
-                  v-model:file-list="fileTableData.invoicedOrReceipts"
-                  class="upload-demo"
-                  style="display:flex;align-items:center"
-                  multiple
-                  :auto-upload="false"
-                  :before-upload="beforeUpload"
-                >
-                <el-icon ><Paperclip /></el-icon>
-              </el-upload>
-            </div>
-          </el-form-item>
-          <el-form-item label="Actual exchange rate justification" prop="actualExchangeRateJustification" >
-            <div class="item" style="display: flex;align-items: center;">
-              <el-upload
-                  v-model:file-list="fileTableData.actualExchangeRateJustification"
-                  class="upload-demo"
-                  style="display:flex;align-items:center"
-                  multiple
-                  :auto-upload="false"
-                  :before-upload="beforeUpload"
-                >
-                <el-icon ><Paperclip /></el-icon>
-              </el-upload>
-            </div>
-          </el-form-item>
-          <el-form-item label="Passport/ID Copy"  prop="passportOrIDCopy" >
-            <div class="item" style="display: flex;align-items: center;">
-              <el-upload
-                  v-model:file-list="fileTableData.passportOrIDCopy"
-                  class="upload-demo"
-                  style="display:flex;align-items:center"
-                  multiple
-                  :auto-upload="false"
-                  :before-upload="beforeUpload"
-                >
-                <el-icon ><Paperclip /></el-icon>
-              </el-upload>
-            </div>
-          </el-form-item>
-          <el-form-item label="Others"  prop="others">
-            <div class="item" style="display: flex;align-items: center;">
-              <el-upload
-                  v-model:file-list="fileTableData.others"
-                  class="upload-demo"
-                  style="display:flex;align-items:center"
-                  multiple
-                  :auto-upload="false"
-                  :before-upload="beforeUpload"
-                >
-                <el-icon ><Paperclip /></el-icon>
-              </el-upload>
-            </div>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-card>
-
+    <div class="attachment">
+      <Attachment :fileFormRule="fileFormRule" :fileTableData="fileTableData" />
+    </div>
+    <!-- navigation -->
     <SideNavigationBar  @click="onClick" :dataList="dataList" :currentTop="currentTop"/>
-
+    <!-- policy -->
     <el-dialog
       v-model="isOpen"
       title="Important"
@@ -1047,7 +587,6 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
         <el-button style="margin-left: 0px;" @click="submitWithoutRules" type="primary" >Confirm and Submit</el-button>
       </div>
     </el-dialog>
-
     <!-- preview -->
     <el-dialog
       v-model="openReviewWindow"

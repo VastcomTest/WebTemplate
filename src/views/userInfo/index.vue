@@ -39,8 +39,8 @@ const navigateToApplicationPage = (type:'to be handled' | 'processing' | 'Proces
       break;
   }
 }
-const navigateToApplicationByCalender = (){
-  
+const navigateToApplicationByCalender = () => {
+
 }
 
 const num = random(1,30)
@@ -155,7 +155,7 @@ onMounted(() => {
               <div style="margin-bottom: 10px;" :class="data.isSelected ? 'is-selected' : ''">
                 {{ data.day.split('-').slice(1).join('-') }}
               </div>
-              <div >
+              <div style="margin-bottom: 10px;">
                 <el-icon><CircleCheck /></el-icon>
                 Processed: {{ num}}
               </div>

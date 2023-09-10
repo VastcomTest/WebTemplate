@@ -155,6 +155,10 @@ export function usePaymentState(){
     } as Payment
   }
 
+  function setPaymentRef(paymentRef:any){
+    paymentTableRef.value = paymentRef
+  }
+
   return {
     paymentTableData,
     paymentTableRef,
@@ -163,6 +167,7 @@ export function usePaymentState(){
     paymentFormRule,
     summaryDataForPayment,
     expandInfoValidate,
-    createInstance
+    createInstance,
+    setPaymentRef
   }
 }
