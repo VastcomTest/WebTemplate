@@ -154,12 +154,12 @@ async function copyRow(tableName:'payment' | 'reimbursement'){
     currencyType: row.paymentCurrencyVal
   })
   dataList.value.push({
-title: payeeName,
-clickAction: () => container.value?.parentElement?.scrollTo({ 'behavior': 'smooth', top: offset }),
-top: offset,
-paddingLeft: 20,
-complete: false
-})
+    title: payeeName,
+    clickAction: () => container.value?.parentElement?.scrollTo({ 'behavior': 'smooth', top: offset }),
+    top: offset,
+    paddingLeft: 20,
+    complete: false
+  })
   onPayeeNameChange(paymentTableData.value.length-1)
   reMeasure(informationForPaymentTableData.value)
   ElMessage('Copy Row successfully')
@@ -170,20 +170,37 @@ async function deleteRow(tableName:'payment' | 'reimbursement'){
   if(tableName === 'payment'){
     //@ts-ignore
     const rows :Payment[] = await paymentTableRef.value.getCheckboxRecords(true)
-    const payeeNameArr =  rows.map(v=>v.payeeName)
-
+    // chose rows
+    const idArr = rows.map(v=>v._VXE_ID)
+    const rowsPayeeName = rows.map(v=>v.payeeName)
+    // original table record of PayeeName
+    const oriPayeeNameArr = paymentTableData.value.map(v=>v.payeeName)
+    // evaluate is more than two record
+    const isDup = (new Set(oriPayeeNameArr)).size !== oriPayeeNameArr.length
+    // row that to be removed
+    const removeRow = paymentTableData.value.find(v=> idArr.findIndex(val=>val === v._VXE_ID))
+    // filter 
     paymentTableData.value = paymentTableData.value.filter(v=>{
-      return payeeNameArr.findIndex(val=>String(val) === v.payeeName) === -1
+      return idArr.findIndex(val=>val === v._VXE_ID) === -1
     })
-    summaryDataForPayment.value =  summaryDataForPayment.value.filter((v: { payeeName: string; })=>{
-      return payeeNameArr.findIndex(val=>String(val) === v.payeeName) === -1
-    })
-    informationForPaymentTableData.value =  informationForPaymentTableData.value.filter(v=>{
-      return payeeNameArr.findIndex(val=>String(val) === v.payee) === -1
-    })
-    dataList.value = dataList.value.filter((v,index)=>{
-      return payeeNameArr.findIndex(val=>String(val) === v.title) === -1
-    })
+    if(!isDup){
+      summaryDataForPayment.value =  summaryDataForPayment.value.filter((v)=>{
+        return rowsPayeeName.findIndex(val=>String(val) === v.payeeName) === -1
+      })
+      informationForPaymentTableData.value =  informationForPaymentTableData.value.filter(v=>{
+        return rowsPayeeName.findIndex(val=>String(val) === v.payee) === -1
+      })
+      dataList.value = dataList.value.filter((v,index)=>{
+        return rowsPayeeName.findIndex(val=>String(val) === v.title) === -1
+      })
+    }else{
+      summaryDataForPayment.value.forEach(v=>{
+        if(v.payeeName === removeRow?.payeeName){
+          v.amount-= removeRow.amount
+        }
+      })
+    }
+
   }else{
     //@ts-ignore
     reimbursementTableRef.value.removeCheckboxRow()
@@ -518,7 +535,7 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Telegraphic transfer (Non-local payee)'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Telegraphic transfer'"
           />
           <BankDraft
               :beneficiary-name="'Daniel'"
@@ -526,7 +543,7 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Bank Draft (Non-local payee)'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Bank Draft'"
           />
           <AutoPay
               :beneficiary-name="'Daniel'"
@@ -534,14 +551,14 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Auto-pay (Local payee)'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Auto-pay'"
           />
           <CashierOrder
               :beneficiary-name="'Daniel'"
               :email-address="'xxx@homtmail.com'"
               :contact-number="'+853 62198402'"
               :index="index"
-              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Cheque/Cashier Order (Local payee)'"
+              v-if="informationForPaymentTableData[index].paymentMethodVal === 'Cheque/Cashier Order'"
           />
       </el-card>
     </div>

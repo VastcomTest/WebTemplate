@@ -1,3 +1,4 @@
+import { SelectionDiff } from './../../constants/selection';
 import { Selection } from '@/constants/selection'
 
 export type FundingSource = 'Non-Research' | 'Research-Internal' | 'Research-External'
@@ -21,7 +22,11 @@ export interface tableExtendField {
   expand:boolean,
   mark:MarkType,
   markComment:string,
-  showPopover:boolean
+  showPopover:boolean,
+  /**
+   * the unique ID that VEXTABLE create
+   */
+  _VXE_ID:string
 }
 
 export type ExpenseType = 'Good' | 'Service'
@@ -75,31 +80,15 @@ export interface Reimbursement extends tableExtendField{
 
 
 // to be updated
-
+export type BankInformation = 'Latest Information to be provided' | 'Information provided in the past'
+export type PaymentMethod = 'Telegraphic transfer' | 'Auto-pay' | 'Cheque/Cashier Order' | 'Bank Draft'
+export type PaymentMethodPrompt = 'Telegraphic transfer (Non-local payee)' | 'Auto-pay (Local payee)' | 'Cheque/Cashier Order (Local payee)' | 'Bank Draft (Non-local payee)'
 export interface InformationForPayment{
   payee:string,
-  bankInformationVal:'Latest Information to be provided' | 'Information provided in the past',
-  bankInformationType:[{
-    value:'Latest Information to be provided',
-    label:'Latest Information to be provided'
-  },{
-    value:'Information provided in the past',
-    label:'Information provided in the past'
-  }],
-  paymentMethodVal:'Telegraphic transfer (Non-local payee)' | 'Auto-pay (Local payee)' | 'Cheque/Cashier Order (Local payee)' | 'Bank Draft (Non-local payee)' ,
-  paymentMethodType:[{
-    label:'Telegraphic transfer (Non-local payee)',
-    value:'Telegraphic transfer'
-  },{
-    label:'Auto-pay (Local payee)',
-    value:'Auto-pay'
-  },{
-    label:'Cheque/Cashier Order (Local payee)',
-    value:'Cheque/Cashier Order'
-  },{
-    label:'Bank Draft (Non-local payee)',
-    value:'Bank Draft'
-  }]
+  bankInformationVal:BankInformation,
+  bankInformationType:Selection<BankInformation>,
+  paymentMethodVal:PaymentMethod,
+  paymentMethodType:SelectionDiff<PaymentMethodPrompt,PaymentMethod>
 }
 
 export interface Attachment{
@@ -110,22 +99,16 @@ export interface Attachment{
   others:string[]
 }
 
+
+export type DesignatedCurrency = 'MOP' | 'HKD' | 'RMB'
+
 // paymentMethod
 export interface TelegraphicTransfer{
   beneficiaryName: string,
   bankAccountNumber: string,
   bankName:string,
-  designatedCurrencyVal:'MOP' | 'HKD' | 'RMB',
-  designatedCurrencyType:[{
-    value:'RMB',
-    label:'RMB'
-  },{
-    value:'HKD',
-    label:'HKD'
-  },{
-    value:'MOP',
-    label:'MOP'
-  }],
+  designatedCurrencyVal:DesignatedCurrency,
+  designatedCurrencyType:Selection<DesignatedCurrency>,
   countryAndDistrictOfBeneficiaryBank:string,
   swiftCode:string,
   bankAddress:string,

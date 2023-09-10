@@ -7,6 +7,11 @@ export type Selection<T> = Array<{
   label:T
 }>
 
+export type SelectionDiff<L,V> = Array<{
+  value:V,
+  label:L
+}>
+
 // for user
 const applicationStatusSelectionForUser = [
   {

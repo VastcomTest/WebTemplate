@@ -20,7 +20,7 @@ onMounted(()=>{
           <h4 style="font-size: 20px;" >Information for payment</h4>
         </div>
       </div>
-      <el-table border v-if="informationForPaymentTableData.length!==0" :data="informationForPaymentTableData" style="width: 660px">
+      <el-table border  :data="informationForPaymentTableData" style="width: 660px">
         <el-table-column label="Payee" width="150" >
           <template #default="scope">
             <el-input :disabled="true" size="small" type="text" v-model="scope.row.payee" />

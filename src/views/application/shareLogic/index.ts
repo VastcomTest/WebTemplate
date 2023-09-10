@@ -79,9 +79,9 @@ class ShareLogic {
     const appId = this.tableData.value[index].applicationId
     const role = getRole()
     const map = {
-      'user':'viewOfMyApplication',
-      'approver':'application',
-      'FO':'applicationForFO'
+      'user':'applicationReview',
+      'approver':'approve',
+      'FO':'approveForFO'
     }
     router.push({
       path:map[role],

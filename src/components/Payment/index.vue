@@ -57,12 +57,14 @@ onMounted(()=>{
         ref="paymentTableRef"
         border
         keepSource
+        empty-text="No Data"
         show-overflow
         :expand-config="{ visibleMethod:({row})=> row.payeeTypeVal === 'Individual' }"
         :data="paymentTableData"
         :edit-rules="paymentFormRule"
         :column-config="{resizable: true}"
         :edit-config="{trigger: 'click', mode:'row',showStatus:true}"
+
       >
 
         <vxe-column type="checkbox" width="80"></vxe-column>
