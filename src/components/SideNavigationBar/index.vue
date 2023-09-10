@@ -45,7 +45,7 @@ watch(()=>props,()=>{
 <template>
   <div   @click="onClick" class="gear" :class="{ 'gear-close':show }">
     <div class="handle-button" >
-      <el-icon v-if="!show" :size="20">
+      <el-icon v-if="show" :size="20">
         <ArrowLeftBold />
       </el-icon>
       <el-icon  v-else :size="20">
