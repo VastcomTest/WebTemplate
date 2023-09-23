@@ -48,7 +48,9 @@ onMounted(()=>{
           <el-button @click="insertRow('payment')" type="primary" >Insert row</el-button>
           <el-button @click="copyRow('payment')" type="primary" >Copy row</el-button>
           <el-button @click="deleteRow('payment')" type="primary" >Delete row</el-button>
-          <el-button @click="importData" type="primary" >Import Data</el-button>
+          <el-upload :showFileList="false" style="margin-left: 12px;" action='' :auto-upload="false" @change="importData">
+            <el-button  type="primary" >Import Data</el-button>
+          </el-upload>
         </div>
       </div>
     </div>

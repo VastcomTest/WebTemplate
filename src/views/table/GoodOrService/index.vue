@@ -39,6 +39,7 @@ import Payment from '@/components/Payment/index.vue'
 import Reimbursement from '@/components/Reimbursement/index.vue'
 import InfoForPayment from '@/components/InfoForPayment/index.vue'
 import Attachment from '@/components/Attachment/index.vue'
+import { ExcelUtil } from "@/utils/excel";
 defineOptions({
   // 命名当前组件
   name: "GoodOrService"
@@ -179,7 +180,7 @@ async function deleteRow(tableName:'payment' | 'reimbursement'){
     const isDup = (new Set(oriPayeeNameArr)).size !== oriPayeeNameArr.length
     // row that to be removed
     const removeRow = paymentTableData.value.find(v=> idArr.findIndex(val=>val === v._VXE_ID))
-    // filter 
+    // filter
     paymentTableData.value = paymentTableData.value.filter(v=>{
       return idArr.findIndex(val=>val === v._VXE_ID) === -1
     })
@@ -209,8 +210,17 @@ async function deleteRow(tableName:'payment' | 'reimbursement'){
   ElMessage('delete Row successfully')
 }
 
-function importData(){
+function importData(file:{raw :File}){
   // to be completed
+  // OK
+  ExcelUtil.importData(file.raw)
+
+}
+
+function exportApplication(){
+  const res = ExcelUtil.export_excel(paymentTableData.value,'payment');
+  console.log(res);
+
 }
 
 function saveAllInfo(type:'save' | 'submit' | 'temp' ){
@@ -473,6 +483,7 @@ watch(informationForPaymentTableData.value,(v,oldV)=>{
           <div style="display: flex;">
             <el-button type="primary"   @click="isOpen = true" >Submit</el-button>
             <el-button type="primary"   @click="saveAllInfo('save')" >Save</el-button>
+            <el-button type="primary" @click="exportApplication">Export application</el-button>
           </div>
         </div>
       </div>
