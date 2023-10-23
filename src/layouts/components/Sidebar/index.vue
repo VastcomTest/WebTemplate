@@ -65,6 +65,7 @@ const tipLineWidth = computed(() => {
         :collapse-transition="false"
         :mode="isTop && !isMobile ? 'horizontal' : 'vertical'"
       >
+      
         <SidebarItem
           v-for="route in permissionStore.routes"
           :key="route.path"

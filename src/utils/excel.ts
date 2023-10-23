@@ -30,7 +30,7 @@ export class ExcelUtil{
     return true
   }
 
-  static async importData<T>(file:File):Promise<T>{
+  static async importData<T extends object>(file:File):Promise<T>{
     let dataBinary = await readFile(file);
     let workBook = XLSX.read(dataBinary, { type: "binary", cellDates: true });
     let workSheet = workBook.Sheets[workBook.SheetNames[0]];

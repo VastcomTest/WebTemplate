@@ -8,7 +8,7 @@ const baseUrl = 'http://127.0.0.1:8087/'
 const http = axios.create({
   baseURL: baseUrl,
   timeout: 3000,
-  
+
 })
 
 // request interceptor
@@ -17,7 +17,6 @@ axios.interceptors.request.use(config=>{
   if(token){
     config.headers.Authorization =  `Bearer ${token}`
   }
-
   return config;
 },err=>err)
 
@@ -28,39 +27,39 @@ axios.interceptors.response.use(
     const status = get(error, "response.status")
       switch (status) {
         case 400:
-          error.message = "请求错误"
+          error.message = "Request Error"
           break
         case 401:
-          // Token 过期时，直接退出登录并强制刷新页面（会重定向到登录页）
           // useUserStoreHook().logout()
+          // token expired
           location.reload()
           break
         case 403:
-          error.message = "拒绝访问"
+          error.message = "Access Refuesd"
           break
         case 404:
-          error.message = "请求地址出错"
+          error.message = "Wrong Request URL"
           break
         case 408:
-          error.message = "请求超时"
+          error.message = "Request timeout"
           break
         case 500:
-          error.message = "服务器内部错误"
+          error.message = "Service internal error"
           break
         case 501:
-          error.message = "服务未实现"
+          error.message = "Service not impletement"
           break
         case 502:
-          error.message = "网关错误"
+          error.message = "Gateway error"
           break
         case 503:
-          error.message = "服务不可用"
+          error.message = "Service is not available"
           break
         case 504:
-          error.message = "网关超时"
+          error.message = "Gateway timeout"
           break
         case 505:
-          error.message = "HTTP 版本不受支持"
+          error.message = "Not support HTTP Version"
           break
         default:
           break

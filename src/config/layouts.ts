@@ -2,27 +2,26 @@ import { getConfigLayout } from "@/utils/cache/local-storage"
 
 /** 项目配置 */
 export interface LayoutSettings {
-  /** 是否显示 Settings Panel */
+  // show setting panel ?
   showSettings: boolean
-  /** 布局模式 */
+  // layout mode
   layoutMode: "left" | "top" | "left-top"
-  /** 是否显示标签栏 */
+  // show tags view
   showTagsView: boolean
-  /** 是否显示 Logo */
+  // show logo
   showLogo: boolean
-  /** 是否固定 Header */
+  // show header
   fixedHeader: boolean
-  /** 是否显示消息通知 */
+  // show notification
   showNotify: boolean
-  /** 是否显示切换主题按钮 */
+  // show theme
   showThemeSwitch: boolean
-  /** 是否显示全屏按钮 */
+  // show full screen option
   showScreenfull: boolean
-  /** 是否缓存标签栏 */
+  // show tags view
   cacheTagsView: boolean
-  /** 是否显示灰色模式 */
+  
   showGreyMode: boolean
-  /** 是否显示色弱模式 */
   showColorWeakness: boolean
 }
 

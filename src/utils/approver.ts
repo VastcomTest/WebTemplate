@@ -4,6 +4,7 @@ import * as TimelineFn from '@/utils/Timeline'
 import { Ref } from "vue"
 import { Payment } from "@/types/entity/goodOrService"
 
+
 async function handleApprove(goodOrService:GoodOrService,role :'fo'|'approver'){
   goodOrService.paymentTableData.forEach(v=>{
     if(v.mark !=='updated'){

@@ -1,3 +1,4 @@
+import { ExcelUtil } from './../../utils/excel';
 import { reactive, ref, watch } from "vue"
 import { defineStore } from "pinia"
 import { getSidebarStatus, setSidebarStatus } from "@/utils/cache/local-storage"
@@ -10,6 +11,7 @@ interface Sidebar {
 
 /** 设置侧边栏状态本地缓存 */
 function handleSidebarStatus(opened: boolean) {
+  
   opened ? setSidebarStatus(SIDEBAR_OPENED) : setSidebarStatus(SIDEBAR_CLOSED)
 }
 
