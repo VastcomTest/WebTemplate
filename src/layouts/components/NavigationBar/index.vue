@@ -2,9 +2,9 @@
 import { computed } from "vue"
 import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
-import { useAppStore } from "@/store/modules/app"
-import { useSettingsStore } from "@/store/modules/settings"
-import { useUserStore } from "@/store/modules/user"
+import { useAppStore } from "@/store/app"
+import { useSettingsStore } from "@/store/settings"
+import { useUserStore } from "@/store/user"
 import { UserFilled } from "@element-plus/icons-vue"
 import Hamburger from "../Hamburger/index.vue"
 import Breadcrumb from "../Breadcrumb/index.vue"
@@ -13,7 +13,7 @@ import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import Screenfull from "@/components/Screenfull/index.vue"
 import Notify from "@/components/Notify/index.vue"
 import { DeviceEnum } from "@/constants/app-key"
-import { useTagsViewStore } from "@/store/modules/tags-view"
+import { useTagsViewStore } from "@/store/tags-view"
 const router = useRouter()
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()

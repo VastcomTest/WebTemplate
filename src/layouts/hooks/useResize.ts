@@ -1,6 +1,6 @@
 import { watch, onBeforeMount, onMounted, onBeforeUnmount } from "vue"
 import { useRoute } from "vue-router"
-import { useAppStore } from "@/store/modules/app"
+import { useAppStore } from "@/store/app"
 import { DeviceEnum } from "@/constants/app-key"
 
 /** 参考 Bootstrap 的响应式设计将最大移动端宽度设置为 992 */

@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { toRefs, ref, watchEffect, onMounted} from 'vue';
 import {useState} from '@/hooks/useState';
-import { useSnackBarStore } from '@/store/modules/snackbar'
+import { useSnackBarStore } from '@/store/snackbar'
 import { storeToRefs } from 'pinia';
 const { show , message , color , timeout } = storeToRefs(useSnackBarStore())
 </script>

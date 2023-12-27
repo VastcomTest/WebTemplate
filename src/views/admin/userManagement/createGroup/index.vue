@@ -14,7 +14,7 @@ import { email, required } from '@vuelidate/validators'
 import { reactive } from 'vue';
 import { create } from 'domain';
 import { watch } from 'vue';
-import { useAppStore } from '@/store/modules/app';
+import { useAppStore } from '@/store/app';
 import { computed } from 'vue';
 import { DeviceEnum } from '@/constants/app-key';
 interface indexProps {

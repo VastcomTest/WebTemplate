@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
-import { useUserStore } from "@/store/modules/user"
+import { useUserStore } from "@/store/user"
 import { type FormInstance, FormRules, ElMessage } from "element-plus"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
@@ -13,36 +13,17 @@ import useVuelidate from "@vuelidate/core"
 import { required } from "@vuelidate/validators"
 const router = useRouter()
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
-/** 登录表单元素的引用 */
-const loginFormRef = ref<FormInstance | null>(null)
-
-/** 登录按钮 Loading */
 const loading = ref(false)
-/** 验证码图片 URL */
-const codeUrl = ref("")
-/** 登录表单数据 */
 const loginFormData = reactive({
   username: "admin",
   password: "P@ssw0rd",
 })
-
 const rules = {
     username: { required },
     password: { required},
-  }
-
-const v$ = useVuelidate(rules, loginFormData)
-
-const isPasswordVisible = ref(false)
-/** 登录表单校验规则 */
-const loginFormRules: FormRules = {
-  username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-  password: [
-    { required: true, message: "请输入密码", trigger: "blur" },
-    { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
-  ],
 }
-/** 登录逻辑 */
+const v$ = useVuelidate(rules, loginFormData)
+const isPasswordVisible = ref(false)
 const handleLogin = async () => {
   const valid = await v$.value.$validate()
   if (valid) {
@@ -71,8 +52,6 @@ const loginWithOkta = async ()=>{
   
 }
 
-/** 初始化验证码 */
-// createCode()
 </script>
 
 <template>

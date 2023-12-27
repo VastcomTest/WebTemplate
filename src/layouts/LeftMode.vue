@@ -1,15 +1,14 @@
 <script lang="ts" setup>
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
-import { useAppStore } from "@/store/modules/app"
-import { useSettingsStore } from "@/store/modules/settings"
+import { useAppStore } from "@/store/app"
+import { useSettingsStore } from "@/store/settings"
 import { AppMain, NavigationBar, Sidebar, TagsView } from "./components"
 import { DeviceEnum } from "@/constants/app-key"
 import { watchEffect } from "vue"
 
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
-
 const { showTagsView, fixedHeader } = storeToRefs(settingsStore)
 
 /** 定义计算属性 layoutClasses，用于控制布局的类名 */
@@ -27,9 +26,6 @@ const zindex = computed(() => appStore.sidebar.zindex)
 
 <template>
   <div :class="layoutClasses" class="app-wrapper">
-    <!-- mobile 端侧边栏遮罩层 -->
-    <!-- <div v-if="layoutClasses.mobile && layoutClasses.openSidebar" class="drawer-bg" @click="handleClickOutside" /> -->
-    <!-- 左侧边栏 -->
     <Sidebar  />
     <div :style="{ zIndex: zindex  }" class="main-container">
       <div :class="{ 'fixed-header': fixedHeader }" class="layout-header">
@@ -43,21 +39,6 @@ const zindex = computed(() => appStore.sidebar.zindex)
 <style lang="scss" scoped>
 @import "@/styles/mixins.scss";
 $transition-time: 0.35s;
-/**
-
-
-<div :class="{ hasTagsView: showTagsView }" class="main-container">
-      <!-- 头部导航栏和标签栏 -->
-      <div :class="{ 'fixed-header': fixedHeader }" class="layout-header">
-        <NavigationBar />
-        <!-- <TagsView v-show="showTagsView" /> -->
-      </div>
-      <!-- 页面主体内容 -->
-      <AppMain class="app-main" />
-    </div>
-
-
-*/
 .app-wrapper {
   @include clearfix;
   position: relative;

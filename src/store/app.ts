@@ -1,4 +1,4 @@
-import { ExcelUtil } from './../../utils/excel';
+import { ExcelUtil } from '../utils/excel';
 import { computed, reactive, ref, watch } from "vue"
 import { defineStore } from "pinia"
 import { getSidebarStatus, setSidebarStatus } from "@/utils/local-storage"

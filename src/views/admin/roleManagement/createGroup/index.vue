@@ -12,7 +12,7 @@ import useVuelidate from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { Role } from '@/models/role';
 import { DeviceEnum } from '@/constants/app-key';
-import { useAppStore } from '@/store/modules/app';
+import { useAppStore } from '@/store/app';
 interface indexProps {
   getTableData:()=>Promise<void>,
   paginationData:PaginationData

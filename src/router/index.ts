@@ -69,8 +69,24 @@ export const constantRoutes: RouteRecordRaw[] = [
     }
   },
   {
+    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
+    redirect: "/404",
+    name: "ErrorPage",
+    meta: {
+      hidden: true
+    }
+  },
+]
+
+/**
+ * 动态路由
+ * 用来放置有权限 (Roles 属性) 的路由
+ * 必须带有 Name 属性
+ */
+export const asyncRoutes: RouteRecordRaw[] = [
+  {
     path:'/',
-    redirect:'/admin/user',
+    redirect:'/userinfo',
     component:Layouts,
     meta:{
       sectionTitle:"Membership"
@@ -80,7 +96,8 @@ export const constantRoutes: RouteRecordRaw[] = [
         component:()=>import("@/views/userInfo/index.vue"),
         name:"Home",
         meta:{
-          mdiIcon:'mdi-history'
+          mdiIcon:'mdi-history',
+          roles:['WhiteSlip.Browser.Read']
         }
       }
     ]
@@ -98,7 +115,8 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: ()=>import("@/views/admin/userManagement/index.vue"),
         name:"User",
         meta:{
-          mdiIcon:'mdi-account-cog'
+          mdiIcon:'mdi-account-cog',
+          roles:['User.Read']
         }
       },
       {
@@ -106,7 +124,8 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: ()=>import("@/views/admin/groupManagement/index.vue"),
         name:"Group",
         meta:{
-          mdiIcon:'mdi-account-group'
+          mdiIcon:'mdi-account-group',
+          roles:['Group.Read']
         }
       },
       {
@@ -114,7 +133,8 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: ()=>import("@/views/admin/roleManagement/index.vue"),
         name:"Role",
         meta:{
-          mdiIcon:'mdi-badge-account'
+          mdiIcon:'mdi-badge-account',
+          roles:['Role.Read']
         }
       },
       {
@@ -122,68 +142,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: ()=>import("@/views/admin/setting/index.vue"),
         name:"Setting",
         meta:{
-          mdiIcon:'mdi-cog'
+          mdiIcon:'mdi-cog',
+          roles:['Config.Read']
         }
       },
     ]
   },
-  // {
-  //   path:'/group',
-  //   redirect: '/group/index',
-  //   component:Layouts,
-  //   children:[{
-  //     path:'index',
-  //     component: ()=>import("@/views/admin/groupManagement/index.vue"),
-  //     name:"Group",
-  //     meta:{
-  //       title:"Group",
-  //       svgIcon: "unocss"
-  //     }
-  //   }]
-  // },
-  // {
-  //   path:'/',
-  //   component:Layouts,
-  //   children:[{
-  //     path:'Role',
-  //     component: ()=>import("@/views/admin/roleManagement/index.vue"),
-  //     name:"Role",
-  //     meta:{
-  //       title:"Role",
-  //       svgIcon: "dashboard"
-  //     }
-  //   }]
-  // },
-  // {
-  //   path:'/',
-  //   component:Layouts,
-  //   children:[{
-  //     path:'User',
-  //     component: ()=>import("@/views/admin/userManagement/index.vue"),
-  //     name:"User",
-  //     meta:{
-  //       title:"User",
-  //       svgIcon: "menu"
-  //     }
-  //   }]
-  // },
-]
-
-/**
- * 动态路由
- * 用来放置有权限 (Roles 属性) 的路由
- * 必须带有 Name 属性
- */
-export const asyncRoutes: RouteRecordRaw[] = [
-  
-  {
-    path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
-    redirect: "/404",
-    name: "ErrorPage",
-    meta: {
-      hidden: true
-    }
-  }
 ]
 
 const router = createRouter({

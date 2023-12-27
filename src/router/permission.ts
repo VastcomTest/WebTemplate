@@ -1,6 +1,6 @@
 import router from "@/router"
-import { useUserStoreHook } from "@/store/modules/user"
-import { usePermissionStoreHook } from "@/store/modules/permission"
+import { useUserStoreHook } from "@/store/user"
+import { usePermissionStoreHook } from "@/store/permission"
 import { ElMessage } from "element-plus"
 import asyncRouteSettings from "@/config/async-route"
 import isWhiteList from "@/config/white-list"
@@ -26,6 +26,8 @@ router.beforeEach(async(to, _from, next) => {
         next("/login")
       }
       permissionStore.setRoutes(userStore.userAuth?.permissions!)
+      console.log(permissionStore.dynamicRoutes);
+      
       permissionStore.dynamicRoutes.forEach((route) => {
         router.addRoute(route)
       })

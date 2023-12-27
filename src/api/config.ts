@@ -1,5 +1,5 @@
 import CacheKey from '@/constants/cache-key'
-import { useUserStoreHook } from '@/store/modules/user'
+import { useUserStoreHook } from '@/store/user'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { get } from 'lodash-es'

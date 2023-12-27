@@ -18,8 +18,8 @@ import { log } from 'console';
 import useVuelidate from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { DeviceEnum } from '@/constants/app-key';
-import { useAppStore } from '@/store/modules/app';
-import { SnackBarUtil } from '@/store/modules/snackbar';
+import { useAppStore } from '@/store/app';
+import { SnackBarUtil } from '@/store/snackbar';
 interface indexProps {
   getTableData:()=>Promise<void>,
   paginationData:PaginationData

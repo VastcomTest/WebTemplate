@@ -3,7 +3,7 @@ import { ref, watch, nextTick } from "vue"
 import { RouterLink, useRoute } from "vue-router"
 import { ElScrollbar } from "element-plus"
 import { ArrowLeft, ArrowRight } from "@element-plus/icons-vue"
-import { useSettingsStore } from "@/store/modules/settings"
+import { useSettingsStore } from "@/store/settings"
 import Screenfull from "@/components/Screenfull/index.vue"
 
 interface Props {

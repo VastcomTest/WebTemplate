@@ -20,9 +20,7 @@ import "@/styles/index.scss"
 import { OktaAuth } from '@okta/okta-auth-js'
 import OktaVue from '@okta/okta-vue'
 import sampleConfig from '@/config/okta'
-import Cookies from "js-cookie"
-import CacheKey from "./constants/cache-key"
-import { vuetify } from "./plugins/vuetify"
+import { loadVuetify} from "./plugins/vuetify"
 
 const app = createApp(App)
 const oktaAuth = new OktaAuth(sampleConfig.oidc)
@@ -30,9 +28,7 @@ const oktaAuth = new OktaAuth(sampleConfig.oidc)
 loadPlugins(app)
 loadSvg(app)
 loadDirectives(app)
-
-app.use(vuetify)
-
+loadVuetify(app)
 
 app.use(store).use(router).use(OktaVue, { oktaAuth })
 router.isReady().then(() => {

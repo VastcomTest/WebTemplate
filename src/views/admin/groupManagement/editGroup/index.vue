@@ -16,7 +16,7 @@ import { User } from '@/models/user';
 import useVuelidate from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
 import { DeviceEnum } from '@/constants/app-key';
-import { useAppStore } from '@/store/modules/app';
+import { useAppStore } from '@/store/app';
 import { debounce } from 'lodash-es';
 import { create } from 'domain';
 interface indexProps {

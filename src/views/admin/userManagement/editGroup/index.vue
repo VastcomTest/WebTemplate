@@ -18,9 +18,9 @@ import useVuelidate from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
 import { watch } from 'vue';
 import { Identity } from '@/enums/identity';
-import { SnackBarUtil } from '@/store/modules/snackbar';
+import { SnackBarUtil } from '@/store/snackbar';
 import { DeviceEnum } from '@/constants/app-key';
-import { useAppStore } from '@/store/modules/app';
+import { useAppStore } from '@/store/app';
 interface indexProps {
   getTableData:()=>Promise<void>,
   paginationData:PaginationData

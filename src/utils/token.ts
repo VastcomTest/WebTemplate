@@ -6,7 +6,6 @@ type Token = {
   scopes:string[]
 }
 
-
 export function getTokenInfo(token:string):Token{
   const tokenBase64 = token!.split('.')[1];
   const tokenString = window.atob(tokenBase64);

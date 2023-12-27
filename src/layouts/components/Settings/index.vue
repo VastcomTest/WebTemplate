@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { watchEffect } from "vue"
 import { storeToRefs } from "pinia"
-import { useSettingsStore } from "@/store/modules/settings"
+import { useSettingsStore } from "@/store/settings"
 import { resetConfigLayout } from "@/utils"
 import SelectLayoutMode from "./SelectLayoutMode.vue"
 import { Refresh } from "@element-plus/icons-vue"
