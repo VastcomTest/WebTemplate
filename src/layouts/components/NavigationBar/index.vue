@@ -14,7 +14,6 @@ import Screenfull from "@/components/Screenfull/index.vue"
 import Notify from "@/components/Notify/index.vue"
 import { DeviceEnum } from "@/constants/app-key"
 import { useTagsViewStore } from "@/store/modules/tags-view"
-
 const router = useRouter()
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
@@ -44,16 +43,16 @@ const logout = () => {
 <template>
   <div class="navigation-bar">
     <Hamburger v-if="!isTop || isMobile" :is-active="sidebar.opened" class="hamburger" @toggle-click="toggleSidebar" />
-    <Breadcrumb v-if="!isTop || isMobile" class="breadcrumb" />
+    <Breadcrumb class="breadcrumb" /> 
     <Sidebar v-if="isTop && !isMobile" class="sidebar" />
     <div class="right-menu">
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
-      <ThemeSwitch v-if="showThemeSwitch" class="right-menu-item" />
-      <Notify v-if="showNotify" class="right-menu-item" />
+      <!-- <ThemeSwitch   class="right-menu-item" /> -->
+      <!-- <Notify v-if="showNotify" class="right-menu-item" /> -->
       <el-dropdown class="right-menu-item">
         <div class="right-menu-avatar">
           <el-avatar :icon="UserFilled" :size="30" />
-          <span>{{ userStore.username }}</span>
+          <!-- <span>{{ userStore.userAuth?.firstName }}</span> -->
         </div>
         <template #dropdown>
           <el-dropdown-menu>
@@ -71,9 +70,9 @@ const logout = () => {
 .navigation-bar {
   height: var(--v3-navigationbar-height);
   overflow: hidden;
-  background: var(--v3-header-bg-color);
   display: flex;
   justify-content: space-between;
+  background-color: var(--v-theme-surface);
   .hamburger {
     display: flex;
     align-items: center;

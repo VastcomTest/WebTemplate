@@ -11,7 +11,8 @@ export function getCurrentDate(){
 }
 
 export function getFullTime(date:Date){
-    return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}`+' '+`${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    date = new Date(date)
+    return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`+' '+`${date.getHours() > 9 ? date.getHours() : `0${date.getHours()}`}:${date.getMinutes() > 9 ? date.getMinutes() : `0${date.getMinutes()}`}`
 }
 
 export function getFormatDate(date:Date){

@@ -3,4 +3,8 @@
 .app-main {
   background-color: $theme-bg-color !important;
   // 写在这里...
+  .card{
+    background-color: $theme-bg-color !important;
+  }
 }
+

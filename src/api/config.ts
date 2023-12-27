@@ -1,19 +1,19 @@
-import { getToken } from '@/utils/cache/cookies'
+import CacheKey from '@/constants/cache-key'
+import { useUserStoreHook } from '@/store/modules/user'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { get } from 'lodash-es'
-
-const baseUrl = 'http://127.0.0.1:8087/'
+const baseUrl = 'https://vastcom-mgm.azurewebsites.net'
 
 const http = axios.create({
   baseURL: baseUrl,
   timeout: 3000,
-
 })
 
 // request interceptor
-axios.interceptors.request.use(config=>{
-  const token = getToken()
+http.interceptors.request.use(config=>{
+  const userStore = useUserStoreHook()
+  const token = userStore.userAuth?.token
   if(token){
     config.headers.Authorization =  `Bearer ${token}`
   }
@@ -21,18 +21,28 @@ axios.interceptors.request.use(config=>{
 },err=>err)
 
 // reponse interceptor
-axios.interceptors.response.use(
-  res=>res,
-  error=>{
+http.interceptors.response.use(
+  res=>{   
+    return res
+  },
+  async error =>{
     const status = get(error, "response.status")
       switch (status) {
         case 400:
           error.message = "Request Error"
           break
         case 401:
-          // useUserStoreHook().logout()
-          // token expired
-          location.reload()
+          const originalRequest = error.config
+          const userStore = useUserStoreHook()
+          if (!originalRequest._retry) {
+            originalRequest._retry = true
+            const res = await userStore.refreshToken()
+            if(res) return http(originalRequest)
+            ElMessage.warning("Refresh token has expired, please login again")
+            return Promise.reject("Refresh token has expired, please login again")
+          } 
+
+
           break
         case 403:
           error.message = "Access Refuesd"
@@ -64,10 +74,12 @@ axios.interceptors.response.use(
         default:
           break
       }
-      ElMessage.error(error.message)
+      ElMessage.error(error.response.data)
       return Promise.reject(error)
   }
 )
+
+
 
 export {
     baseUrl,

@@ -66,10 +66,10 @@ const resolvePath = (routePath: string) => {
   >
     <template v-if="!alwaysShowRootMenu && theOnlyOneChild && !theOnlyOneChild.children">
       <SidebarItemLink v-if="theOnlyOneChild.meta" :to="resolvePath(theOnlyOneChild.path)">
-        <el-menu-item :index="resolvePath(theOnlyOneChild.path)">
-          <SvgIcon v-if="theOnlyOneChild.meta.svgIcon" :name="theOnlyOneChild.meta.svgIcon" />
+        <el-menu-item style="font-size: 15px;display: flex" :index="resolvePath(theOnlyOneChild.path)">
+          <SvgIcon v-if="theOnlyOneChild.meta.svgIcon" :name="theOnlyOneChild.meta.svgIcon as any" />
           <component v-else-if="theOnlyOneChild.meta.elIcon" :is="theOnlyOneChild.meta.elIcon" class="el-icon" />
-          <template v-if="theOnlyOneChild.meta.title" #title>
+          <template  v-if="theOnlyOneChild.meta.title" #title>
             {{ theOnlyOneChild.meta.title }}
           </template>
         </el-menu-item>
@@ -77,9 +77,11 @@ const resolvePath = (routePath: string) => {
     </template>
     <el-sub-menu v-else :index="resolvePath(props.item.path)" teleported>
       <template #title>
-        <SvgIcon v-if="props.item.meta?.svgIcon" :name="props.item.meta.svgIcon" />
-        <component v-else-if="props.item.meta?.elIcon" :is="props.item.meta.elIcon" class="el-icon" />
-        <span v-if="props.item.meta?.title">{{ props.item.meta.title }}</span>
+        <div>
+          <SvgIcon v-if="props.item.meta?.svgIcon" :name="props.item.meta.svgIcon as any" />
+          <component v-else-if="props.item.meta?.elIcon" :is="props.item.meta.elIcon" class="el-icon" />
+          <span v-if="props.item.meta?.title" style="font-size: 15px;">{{ props.item.meta.title }}</span>
+        </div>
       </template>
       <template v-if="props.item.children">
         <sidebar-item
@@ -99,18 +101,19 @@ const resolvePath = (routePath: string) => {
 .svg-icon {
   min-width: 1em;
   margin-right: 12px;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .el-icon {
   width: 1em;
   margin-right: 12px;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .simple-mode {
   &.first-level {
     :deep(.el-sub-menu) {
+      font-size: 16px;
       .el-sub-menu__icon-arrow {
         display: none;
       }

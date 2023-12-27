@@ -4,38 +4,52 @@ import { defineStore } from "pinia"
 import { usePermissionStore } from "./permission"
 import { useTagsViewStore } from "./tags-view"
 import { useSettingsStore } from "./settings"
-import { getToken, removeToken, setToken } from "@/utils/cache/cookies"
 import router, { resetRouter } from "@/router"
-import { loginApi, getUserInfoApi } from "@/api/login"
-import { type LoginRequestData } from "@/api/login/types/login"
-import { type RouteRecordRaw } from "vue-router"
+import { useRouter, type RouteRecordRaw } from "vue-router"
 import asyncRouteSettings from "@/config/async-route"
 import { uniqueId } from "lodash-es"
+import { IService } from "@/service/Index"
+import { Permission } from "@/models/permission"
+import CacheKey from "@/constants/cache-key"
+import { UserAuth } from "@/models/user-auth"
+import { ElMessage } from "element-plus"
 
-
-export type Role = 'admin' | 'user' | 'approver'
 
 export const useUserStore = defineStore("user", () => {
-  const roles = ref<Role[]>([])
-  const username = ref<string>("")
-  //const permissionStore = usePermissionStore()
+  const userAuth = ref<UserAuth>()
   const tagsViewStore = useTagsViewStore()
   const settingsStore = useSettingsStore()
+  const permissionStore = usePermissionStore()
 
-  /** 设置角色数组 */
-  const setRoles = (value: Role[]) => {
-    roles.value = value
+  const setUserAuth = (temp: UserAuth) => userAuth.value = temp
+
+  const login = async ({ username, password }: {username:string,password:string}) => {
+    const { data } = await IService.authservice.login({ username,password})
+    // const { data:res} = await IService.userservice.getUsersByCondition(username)
+    // const userInfo = res.data[0]
+    userAuth.value = data
+    permissionStore.setRoutes(data.permissions)
+    localStorage.setItem(CacheKey.USERINFO,JSON.stringify(data))
+    localStorage.setItem(CacheKey.REFRESH_TOKEN,data.refreshToken)
   }
-  /** 登录 */
-  const login = async ({ username, password }: LoginRequestData) => {
-    //const { data } = await loginApi({ username, password })
-    setToken(uniqueId())
-    localStorage.setItem('role',username)
+
+  const refreshToken = async ()=>{
+    const refreshToken = localStorage.getItem(CacheKey.REFRESH_TOKEN)
+    if(refreshToken ==null) return false
+    try {
+      const { data } = await IService.authservice.refreshToken(refreshToken)
+      userAuth.value = data
+      localStorage.setItem(CacheKey.REFRESH_TOKEN,data.refreshToken)
+      return true
+    } catch (error: any) {
+      return false;
+    }
   }
-  /** 登出 */
+
+
   const logout = () => {
-    removeToken()
-    roles.value = []
+    localStorage.removeItem(CacheKey.REFRESH_TOKEN)
+    userAuth.value = undefined
     resetRouter()
     _resetTagsView()
   }
@@ -47,7 +61,7 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
-  return { roles, username, setRoles, login, logout }
+  return { userAuth,refreshToken,login, logout ,setUserAuth}
 })
 
 /** 在 setup 外使用 */

@@ -2,14 +2,17 @@
 import { reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { useUserStore } from "@/store/modules/user"
-import { type FormInstance, FormRules } from "element-plus"
+import { type FormInstance, FormRules, ElMessage } from "element-plus"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
-import { getLoginCodeApi } from "@/api/login"
-import { type LoginRequestData } from "@/api/login/types/login"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
-
+import { getCurrentInstance } from "vue"
+import { ComponentInternalInstance } from "vue"
+import { IService } from "@/service/Index"
+import logo from '/mgm-primary.png'
+import useVuelidate from "@vuelidate/core"
+import { required } from "@vuelidate/validators"
 const router = useRouter()
-
+const { proxy } = getCurrentInstance() as ComponentInternalInstance
 /** 登录表单元素的引用 */
 const loginFormRef = ref<FormInstance | null>(null)
 
@@ -19,24 +22,18 @@ const loading = ref(false)
 const codeUrl = ref("")
 /** 登录表单数据 */
 const loginFormData = reactive({
-  username: "user",
-  password: "12345678",
-  options:[
-  // {
-  //   label:'Admin',
-  //   value:'admin'
-  // },
-  {
-    label:'user',
-    value:'user'
-  },{
-    label:"approver",
-    value:'approver'
-  },{
-    label:"FO",
-    value:'FO'
-  }]
+  username: "admin",
+  password: "P@ssw0rd",
 })
+
+const rules = {
+    username: { required },
+    password: { required},
+  }
+
+const v$ = useVuelidate(rules, loginFormData)
+
+const isPasswordVisible = ref(false)
 /** 登录表单校验规则 */
 const loginFormRules: FormRules = {
   username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
@@ -44,120 +41,195 @@ const loginFormRules: FormRules = {
     { required: true, message: "请输入密码", trigger: "blur" },
     { min: 8, max: 16, message: "长度在 8 到 16 个字符", trigger: "blur" }
   ],
-  code: [{ required: true, message: "请输入验证码", trigger: "blur" }]
 }
 /** 登录逻辑 */
-const handleLogin = () => {
-  loginFormRef.value?.validate((valid: boolean, fields) => {
-    if (valid) {
-      loading.value = true
-      useUserStore()
-        .login(loginFormData)
-        .then(() => {
-          router.push({ path: "/" })
-        })
-        .catch(() => {
-          loginFormData.password = ""
-        })
-        .finally(() => {
-          loading.value = false
-        })
-    } else {
-      console.error("error: ", fields)
-    }
-  })
+const handleLogin = async () => {
+  const valid = await v$.value.$validate()
+  if (valid) {
+    loading.value = true
+    useUserStore()
+      .login(loginFormData)
+      .then(() => {
+        router.push({ path: "/" })
+      })
+      .catch(() => {
+        loginFormData.password = ""
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  } else {
+    ElMessage.error("username or password is wrong")
+  }
 }
 
+
+const loginWithOkta = async ()=>{
+  console.log(window.location.origin);
+  
+  await proxy?.$auth.signInWithRedirect({ originalUri: '/' })
+  
+}
 
 /** 初始化验证码 */
 // createCode()
 </script>
 
 <template>
-  <div class="login-container">
-    <ThemeSwitch class="theme-switch" />
-    <div class="login-card">
-      <div class="title">
-        <img style="object-fit:contain;scale: 1.4;transform: translateY(10px);" src="@/assets/vastcomlogo.jpg" />
-      </div>
-      <div class="content">
-        <el-form ref="loginFormRef" :model="loginFormData" :rules="loginFormRules" @keyup.enter="handleLogin">
-          <el-form-item prop="username">
-            <el-select style="width: 110%;" v-model="loginFormData.username" class="m-2" placeholder="Select" size="large">
-              <el-option
-                v-for="item in loginFormData.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-              v-model.trim="loginFormData.password"
-              placeholder="password"
-              type="password"
-              tabindex="2"
-              :prefix-icon="Lock"
-              size="large"
-              show-password
+  <div class="auth-wrapper d-flex align-center justify-center pa-4">
+    
+    <VCard
+      class="auth-card pa-4 pt-7"
+      max-width="448"
+      :variant="'elevated'"
+      elevation="16"
+      style="border-radius: 20px;"
+    >  
+    <VCardItem style="margin-bottom: 20px;" class="justify-center">
+        <template #prepend>
+          <div style="display: flex;flex-direction: column;align-items: center;">
+            <div>
+              <img
+              class="mr-2"
+              :src="logo"
+              alt="logo"
+              width="64"
+              height="64"
+              
             />
-          </el-form-item>
+          </div>
+            <span class="font-weight-bold text-h4">VastComTech</span>
+          </div>
+        </template>
 
-          <el-button :loading="loading" type="primary" size="large" @click.prevent="handleLogin">LogIn</el-button>
-        </el-form>
-      </div>
-    </div>
+    </VCardItem>
+      <VCardText>
+        <form>
+          <VRow>
+            <!-- email -->
+            <VCol cols="12">
+              <VTextField
+              required
+                v-model="loginFormData.username"
+                label="Email"
+                type="email"
+              />
+            </VCol>
+
+            <!-- password -->
+            <VCol cols="12">
+              <VTextField
+                v-model="loginFormData.password"
+                label="Password"
+                :type="isPasswordVisible ? 'text' : 'password'"
+                :append-inner-icon="isPasswordVisible ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                @click:append-inner="isPasswordVisible = !isPasswordVisible"
+              />
+
+              <!-- forget password  -->
+              <div class="d-flex align-center justify-space-between flex-wrap mt-1 mb-4">
+                <a
+                  class="ms-2 mb-1"
+                  href="javascript:void(0)"
+                >
+                  Forgot Password?
+                </a>
+              </div>
+
+              <!-- login button -->
+              <VBtn
+                block
+                color="primary"
+                style="border-radius: 5px;margin-bottom: 0px;"
+                @click="handleLogin"
+              >
+                Local Login
+              </VBtn>
+
+              <!-- <VBtn
+                block
+                color="primary"
+                style="border-radius: 5px;"
+              >
+                OKTA Login
+              </VBtn> -->
+            </VCol>
+
+            <!-- create account -->
+            <VCol
+              cols="12"
+              class="text-center text-base"
+              color="primary"
+              
+            >
+              <!-- <span style="cursor: pointer;">Create Account</span> -->
+            </VCol>
+            <VCol
+              cols="12"
+              class="d-flex align-center"
+            >
+              <VDivider />
+              <span class="mx-4">V1.0.0</span>
+              <VDivider />
+            </VCol>
+
+          </VRow>
+        </form>
+      </VCardText>
+    </VCard>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.login-container {
+.auth-wrapper {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  flex-direction: column;
   width: 100%;
-  min-height: 100%;
-  .theme-switch {
-    position: fixed;
-    top: 5%;
-    right: 5%;
-    cursor: pointer;
-  }
-  .login-card {
-    width: 480px;
-    border-radius: 20px;
-    box-shadow: 0 0 10px #dcdfe6;
-    background-color: #fff;
-    overflow: hidden;
-    .title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 150px;
-      img {
-        height: 100%;
-      }
-    }
-    .content {
-      padding: 20px 50px 50px 50px;
-      :deep(.el-input-group__append) {
-        padding: 0;
-        overflow: hidden;
-        .el-image {
-          width: 100px;
-          height: 40px;
-          border-left: 0px;
-          user-select: none;
-          cursor: pointer;
-          text-align: center;
-        }
-      }
-      .el-button {
-        width: 100%;
-        margin-top: 10px;
-      }
-    }
-  }
+  height: 100%;
+  background-color: rgb(var(--v-theme-surface));
 }
+
+.auth-footer-mask {
+  position: absolute;
+  inset-block-end: 0;
+  min-inline-size: 100%;
+}
+
+.auth-card {
+  z-index: 1 !important;
+}
+
+.auth-footer-start-tree,
+.auth-footer-end-tree {
+  position: absolute;
+  z-index: 1;
+}
+
+.auth-footer-start-tree {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+}
+
+.auth-footer-end-tree {
+  inset-block-end: 0;
+  inset-inline-end: 0;
+}
+
+.auth-illustration {
+  z-index: 1;
+}
+
+.auth-logo {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 2rem;
+  inset-inline-start: 2.3rem;
+}
+
+.auth-bg {
+  background-color: rgb(var(--v-theme-surface));
+}
+
 </style>

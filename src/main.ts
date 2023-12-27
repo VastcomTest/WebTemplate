@@ -16,17 +16,27 @@ import "element-plus/theme-chalk/dark/css-vars.css"
 import "vxe-table/lib/style.css"
 import "vxe-table-plugin-element/dist/style.css"
 import "@/styles/index.scss"
+// okta
+import { OktaAuth } from '@okta/okta-auth-js'
+import OktaVue from '@okta/okta-vue'
+import sampleConfig from '@/config/okta'
+import Cookies from "js-cookie"
+import CacheKey from "./constants/cache-key"
+import { vuetify } from "./plugins/vuetify"
 
 const app = createApp(App)
+const oktaAuth = new OktaAuth(sampleConfig.oidc)
 
-/** 加载插件 */
 loadPlugins(app)
-/** 加载全局 SVG */
 loadSvg(app)
-/** 加载自定义指令 */
 loadDirectives(app)
 
-app.use(store).use(router)
+app.use(vuetify)
+
+
+app.use(store).use(router).use(OktaVue, { oktaAuth })
 router.isReady().then(() => {
-  app.mount("#app")
+  setTimeout(()=>{
+    app.mount("#app")
+  },1000)
 })

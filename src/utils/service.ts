@@ -119,4 +119,4 @@ function createRequest(service: AxiosInstance) {
 /** 用于网络请求的实例 */
 const service = createService()
 /** 用于网络请求的方法 */
-export const request = createRequest(service)
+//export const request = createRequest(service)

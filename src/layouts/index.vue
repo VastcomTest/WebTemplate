@@ -38,17 +38,14 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div :class="classes">
+  <div style="height: 100%;width: 100%;" >
     <!-- 左侧模式 -->
     <LeftMode v-if="layoutMode === 'left' || appStore.device === DeviceEnum.Mobile" />
-    <!-- 顶部模式 -->
-    <TopMode v-else-if="layoutMode === 'top'" />
-    <!-- 混合模式 -->
+    <!-- <TopMode v-else-if="layoutMode === 'top'" />
     <LeftTopMode v-else-if="layoutMode === 'left-top'" />
-    <!-- 右侧设置面板 -->
     <RightPanel v-if="showSettings">
       <Settings />
-    </RightPanel>
+    </RightPanel> -->
   </div>
 </template>
 

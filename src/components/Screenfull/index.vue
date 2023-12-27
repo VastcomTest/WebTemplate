@@ -16,8 +16,8 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   element: "html",
-  openTips: "全屏",
-  exitTips: "退出全屏",
+  openTips: "fullscreen",
+  exitTips: "exit fullscreen",
   content: false
 })
 
@@ -62,14 +62,14 @@ const handleContentLargeClick = () => {
 </script>
 
 <template>
-  <div>
+  <div style="transform: translateY(5px);">
     <!-- 全屏 -->
     <el-tooltip v-if="!content" effect="dark" :content="fullscreenTips" placement="bottom">
       <SvgIcon :name="fullscreenSvgName" @click="handleFullscreenClick" />
     </el-tooltip>
     <!-- 内容区 -->
     <el-dropdown v-else>
-      <SvgIcon :name="contentLargeSvgName" />
+      <SvgIcon  :name="contentLargeSvgName" />
       <template #dropdown>
         <el-dropdown-menu>
           <!-- 内容区放大 -->

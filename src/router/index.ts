@@ -1,5 +1,6 @@
 import { type RouteRecordRaw, createRouter, createWebHashHistory, createWebHistory } from "vue-router"
-
+import { LoginCallback, navigationGuard } from '@okta/okta-vue'
+import ProfileComponent from '@/components/Profile/index.vue'
 const Layouts = () => import("@/layouts/index.vue")
 
 /** 常驻路由 */
@@ -16,6 +17,20 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/redirect/index.vue")
       }
     ]
+  },
+  {
+    path: '/login/callback',
+    meta:{
+      hidden: true
+    },
+    component: LoginCallback
+  },
+  {
+    path: '/profile',
+    component: ProfileComponent,
+    meta:{
+      hidden: true
+    },
   },
   {
     path: "/403",
@@ -40,6 +55,13 @@ export const constantRoutes: RouteRecordRaw[] = [
     },
   },
   {
+    path: "/pdf",
+    component: () => import("@/views/pdf/index.vue"),
+    meta: {
+      hidden: true
+    }
+  },
+  {
     path: "/login",
     component: () => import("@/views/login/index.vue"),
     meta: {
@@ -48,38 +70,103 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path:'/',
-    redirect:'userinfo',
+    redirect:'/admin/user',
     component:Layouts,
+    meta:{
+      sectionTitle:"Membership"
+    },
     children:[{
         path:'userinfo',
         component:()=>import("@/views/userInfo/index.vue"),
         name:"Home",
         meta:{
-          title:'Home',
-          elIcon:'User',
+          mdiIcon:'mdi-history'
         }
       }
     ]
   },
   {
-    path:'/',
-    redirect:'timeline',
+    path:'/admin',
     component:Layouts,
+    redirect: '/admin/group',
     meta:{
-      hidden:true
-
+      sectionTitle:"Management"
     },
-    children:[{
-        path:'timeline',
-        component:()=>import("@/views/timeline/index.vue"),
-        name:"timeline",
+    children:[
+      {
+        path:'user',
+        component: ()=>import("@/views/admin/userManagement/index.vue"),
+        name:"User",
         meta:{
-          title:'timeline',
-
+          mdiIcon:'mdi-account-cog'
         }
-      }
+      },
+      {
+        path:'group',
+        component: ()=>import("@/views/admin/groupManagement/index.vue"),
+        name:"Group",
+        meta:{
+          mdiIcon:'mdi-account-group'
+        }
+      },
+      {
+        path:'role',
+        component: ()=>import("@/views/admin/roleManagement/index.vue"),
+        name:"Role",
+        meta:{
+          mdiIcon:'mdi-badge-account'
+        }
+      },
+      {
+        path:'setting',
+        component: ()=>import("@/views/admin/setting/index.vue"),
+        name:"Setting",
+        meta:{
+          mdiIcon:'mdi-cog'
+        }
+      },
     ]
   },
+  // {
+  //   path:'/group',
+  //   redirect: '/group/index',
+  //   component:Layouts,
+  //   children:[{
+  //     path:'index',
+  //     component: ()=>import("@/views/admin/groupManagement/index.vue"),
+  //     name:"Group",
+  //     meta:{
+  //       title:"Group",
+  //       svgIcon: "unocss"
+  //     }
+  //   }]
+  // },
+  // {
+  //   path:'/',
+  //   component:Layouts,
+  //   children:[{
+  //     path:'Role',
+  //     component: ()=>import("@/views/admin/roleManagement/index.vue"),
+  //     name:"Role",
+  //     meta:{
+  //       title:"Role",
+  //       svgIcon: "dashboard"
+  //     }
+  //   }]
+  // },
+  // {
+  //   path:'/',
+  //   component:Layouts,
+  //   children:[{
+  //     path:'User',
+  //     component: ()=>import("@/views/admin/userManagement/index.vue"),
+  //     name:"User",
+  //     meta:{
+  //       title:"User",
+  //       svgIcon: "menu"
+  //     }
+  //   }]
+  // },
 ]
 
 /**
@@ -88,161 +175,7 @@ export const constantRoutes: RouteRecordRaw[] = [
  * 必须带有 Name 属性
  */
 export const asyncRoutes: RouteRecordRaw[] = [
-
-  {
-    path: "/",
-    redirect:'/viewOfMyApplication',
-    component: Layouts,
-    meta:{
-      roles:['admin','user'],
-    },
-    children: [
-      {
-        path: "viewOfMyApplication",
-        component: () => import("@/views/application/user/index.vue"),
-        name: "viewOfMyApplication",
-        meta: {
-          title: "View of my applications",
-          svgIcon: "dashboard",
-        }
-      },
-    ]
-  },
-  {
-    path: "/",
-    redirect:'/applicationForFO',
-    component: Layouts,
-    meta:{
-      roles:['FO'],
-    },
-    children: [
-      {
-        path: "applicationForFO",
-        component: () => import("@/views/application/fo/index.vue"),
-        name: "applicationForFO",
-        meta: {
-          title: "Application",
-          svgIcon: "dashboard",
-        }
-      },
-    ]
-  },
-  {
-    path: "/",
-    name: "Application",
-    redirect:'/application/index',
-    component: Layouts,
-    meta:{
-      title: "application",
-      svgIcon: "dashboard",
-      roles:['approver'],
-    },
-    children: [
-      {
-        path: "application",
-        component: () => import("@/views/application/approver/index.vue"),
-        name: "ApplicationIndex",
-        meta: {
-          title: "application",
-          svgIcon: "dashboard",
-        }
-      },
-    ]
-  },
-  {
-    path: "/form",
-    component: Layouts,
-    //redirect: "/table/element-plus",
-    name: "Form",
-    meta: {
-      title: "Form",
-      elIcon: "Grid",
-      roles:['admin','user']
-    },
-    children: [
-      {
-        path: "goodOrService",
-        component: () => import("@/views/table/GoodOrService/index.vue"),
-        name: "GoodOrService",
-        meta: {
-          title: "Good / Service",
-          keepAlive: true
-        }
-      },
-      {
-        path: "trip",
-        component: () => import("@/views/table/Trip/index.vue"),
-        name: "Trip",
-        meta: {
-          title: "Trip",
-          keepAlive: true
-        }
-      },
-      {
-        path: "stipend",
-        component: () => import("@/views/table/Stipend/index.vue"),
-        name: "Stipend",
-        meta: {
-          title: "Stipend",
-          keepAlive: true
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    redirect:'/applicationReview',
-    component:Layouts,
-    meta:{
-      hidden:true,
-      roles:['user']
-    },
-    children:[{
-        path:'applicationReview',
-        component:()=>import("@/views/applicationReview/user/index.vue"),
-        name:"applicationReview",
-        meta:{
-          title:'Application Review',
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    redirect:'/approve',
-    component:Layouts,
-    meta:{
-      roles:['approver'],
-      hidden:true
-    },
-    children:[{
-      path:'approve',
-        component:()=>import("@/views/applicationReview/approver/index.vue"),
-        name:"approve",
-        meta:{
-          title:'Approve',
-        }
-      }
-    ]
-  },
-  {
-    path: "/",
-    redirect:'/approveForFO',
-    component:Layouts,
-    meta:{
-      roles:['FO'],
-      hidden:true
-    },
-    children:[{
-        path:'approveForFO',
-        component:()=>import("@/views/applicationReview/fo/index.vue"),
-        name:"approve",
-        meta:{
-          title:'Approve',
-        }
-      }
-    ]
-  },
+  
   {
     path: "/:pathMatch(.*)*", // Must put the 'ErrorPage' route at the end, 必须将 'ErrorPage' 路由放在最后
     redirect: "/404",

@@ -4,7 +4,6 @@ import { defineStore } from "pinia"
 import { type RouteRecordRaw } from "vue-router"
 import { constantRoutes, asyncRoutes } from "@/router"
 import asyncRouteSettings from "@/config/async-route"
-
 const hasPermission = (roles: string[], route: RouteRecordRaw) => {
   const routeRoles = route.meta?.roles
   return routeRoles ? roles.some((role) => routeRoles.includes(role)) : true
@@ -15,6 +14,7 @@ const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[]) => {
   routes.forEach((route) => {
     const tempRoute = { ...route }
     if (hasPermission(roles, tempRoute)) {
+      
       if (tempRoute.children) {
         tempRoute.children = filterAsyncRoutes(tempRoute.children, roles)
       }

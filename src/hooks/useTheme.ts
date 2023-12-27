@@ -1,31 +1,35 @@
 import { ref, watchEffect } from "vue"
-import { getActiveThemeName, setActiveThemeName } from "@/utils/cache/local-storage"
+import { getActiveThemeName, setActiveThemeName } from "@/utils/local-storage"
+import theme from '@/plugins/vuetify/theme'
+import { VuetifyOptions } from "vuetify/lib/framework.mjs"
 
 const DEFAULT_THEME_NAME = "normal"
 type DefaultThemeName = typeof DEFAULT_THEME_NAME
 
 /** 注册的主题名称, 其中 DefaultThemeName 是必填的 */
-export type ThemeName = DefaultThemeName | "dark" | "dark-blue"
+export type ThemeName = DefaultThemeName | "dark" | "light"
 
 interface ThemeList {
   title: string
-  name: ThemeName
+  name: ThemeName,
+  themeSetting: typeof theme.themes.dark
 }
 
 /** 主题列表 */
 const themeList: ThemeList[] = [
   {
-    title: "默认",
-    name: DEFAULT_THEME_NAME
+    title: "Light",
+    name: "light",
+    // @ts-ignore
+    themeSetting: theme.themes.light
   },
   {
-    title: "黑暗",
-    name: "dark"
+    title: "Dark",
+    name: "dark",
+    // @ts-ignore
+    themeSetting: theme.themes.drak
   },
-  {
-    title: "深蓝",
-    name: "dark-blue"
-  }
+  
 ]
 
 /** 正在应用的主题名称 */

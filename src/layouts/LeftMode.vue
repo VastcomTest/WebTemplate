@@ -5,6 +5,7 @@ import { useAppStore } from "@/store/modules/app"
 import { useSettingsStore } from "@/store/modules/settings"
 import { AppMain, NavigationBar, Sidebar, TagsView } from "./components"
 import { DeviceEnum } from "@/constants/app-key"
+import { watchEffect } from "vue"
 
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
@@ -16,31 +17,24 @@ const layoutClasses = computed(() => {
   return {
     hideSidebar: !appStore.sidebar.opened,
     openSidebar: appStore.sidebar.opened,
-    withoutAnimation: appStore.sidebar.withoutAnimation,
+    //withoutAnimation: appStore.sidebar.withoutAnimation,
     mobile: appStore.device === DeviceEnum.Mobile
   }
 })
 
-/** 用于处理点击 mobile 端侧边栏遮罩层的事件 */
-const handleClickOutside = () => {
-  appStore.closeSidebar(false)
-}
+const zindex = computed(() => appStore.sidebar.zindex)
 </script>
 
 <template>
   <div :class="layoutClasses" class="app-wrapper">
     <!-- mobile 端侧边栏遮罩层 -->
-    <div v-if="layoutClasses.mobile && layoutClasses.openSidebar" class="drawer-bg" @click="handleClickOutside" />
+    <!-- <div v-if="layoutClasses.mobile && layoutClasses.openSidebar" class="drawer-bg" @click="handleClickOutside" /> -->
     <!-- 左侧边栏 -->
-    <Sidebar class="sidebar-container" />
-    <!-- 主容器 -->
-    <div :class="{ hasTagsView: showTagsView }" class="main-container">
-      <!-- 头部导航栏和标签栏 -->
+    <Sidebar  />
+    <div :style="{ zIndex: zindex  }" class="main-container">
       <div :class="{ 'fixed-header': fixedHeader }" class="layout-header">
         <NavigationBar />
-        <TagsView v-show="showTagsView" />
       </div>
-      <!-- 页面主体内容 -->
       <AppMain class="app-main" />
     </div>
   </div>
@@ -49,11 +43,26 @@ const handleClickOutside = () => {
 <style lang="scss" scoped>
 @import "@/styles/mixins.scss";
 $transition-time: 0.35s;
+/**
 
+
+<div :class="{ hasTagsView: showTagsView }" class="main-container">
+      <!-- 头部导航栏和标签栏 -->
+      <div :class="{ 'fixed-header': fixedHeader }" class="layout-header">
+        <NavigationBar />
+        <!-- <TagsView v-show="showTagsView" /> -->
+      </div>
+      <!-- 页面主体内容 -->
+      <AppMain class="app-main" />
+    </div>
+
+
+*/
 .app-wrapper {
   @include clearfix;
   position: relative;
   width: 100%;
+  height: 100%;
 }
 
 .drawer-bg {
@@ -68,8 +77,8 @@ $transition-time: 0.35s;
 
 .sidebar-container {
   background-color: var(--v3-sidebar-menu-bg-color);
-  transition: width $transition-time;
-  width: var(--v3-sidebar-width) !important;
+  transition: width $transition-time ease 0s;
+  // width: var(--v3-sidebar-width) !important;
   height: 100%;
   position: fixed;
   top: 0;
@@ -81,18 +90,20 @@ $transition-time: 0.35s;
 
 .main-container {
   min-height: 100%;
-  transition: margin-left $transition-time;
-  margin-left: var(--v3-sidebar-width);
-  position: relative;
+  height: 100%;
+  transition: width $transition-time ease 0s;
+  width: calc(100% - var(--v3-sidebar-width));
+  position: absolute;
+  top: var(--v3-navigationbar-height);
+  right: 0;
 }
 
 .fixed-header {
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 9;
   width: calc(100% - var(--v3-sidebar-width));
-  transition: width $transition-time;
+  transition: width $transition-time ease 0s;
 }
 
 .layout-header {
@@ -101,12 +112,12 @@ $transition-time: 0.35s;
 
 .app-main {
   min-height: calc(100vh - var(--v3-navigationbar-height));
+  background-color: rgb(var(--v-theme-surface));
   position: relative;
   overflow: hidden;
 }
 
 .fixed-header + .app-main {
-  padding-top: var(--v3-navigationbar-height);
   height: 100vh;
   overflow: auto;
 }
@@ -125,7 +136,7 @@ $transition-time: 0.35s;
     width: var(--v3-sidebar-hide-width) !important;
   }
   .main-container {
-    margin-left: var(--v3-sidebar-hide-width);
+    width: calc(100% - var(--v3-sidebar-hide-width));
   }
   .fixed-header {
     width: calc(100% - var(--v3-sidebar-hide-width));
@@ -140,9 +151,11 @@ $transition-time: 0.35s;
   }
   .main-container {
     margin-left: 0px;
+    width: 100%;
   }
   .fixed-header {
     width: 100%;
+    background-color: rgb(var(--v-theme-surface))
   }
   &.openSidebar {
     position: fixed;

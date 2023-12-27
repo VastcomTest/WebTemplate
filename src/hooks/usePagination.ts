@@ -1,6 +1,6 @@
 import { reactive } from "vue"
 
-interface DefaultPaginationData {
+export interface PaginationData {
   total: number
   currentPage: number
   pageSizes: number[]
@@ -8,7 +8,7 @@ interface DefaultPaginationData {
   layout: string
 }
 
-interface PaginationData {
+interface DefaultPaginationData {
   total?: number
   currentPage?: number
   pageSizes?: number[]
@@ -16,7 +16,7 @@ interface PaginationData {
   layout?: string
 }
 
-const defaultPaginationData: DefaultPaginationData = {
+const defaultPaginationData: PaginationData = {
   total: 0,
   currentPage: 1,
   pageSizes: [10, 20, 50],
@@ -24,9 +24,9 @@ const defaultPaginationData: DefaultPaginationData = {
   layout: "total, sizes, prev, pager, next, jumper"
 }
 
-export function usePagination(initialPaginationData: PaginationData = {}) {
+export function usePagination(initialPaginationData: DefaultPaginationData = {}) {
   /** merge parmas */
-  const paginationData = reactive({ ...defaultPaginationData, ...initialPaginationData })
+  const paginationData:PaginationData = reactive({ ...defaultPaginationData, ...initialPaginationData })
   /** modify cur page */
   const handleCurrentChange = (value: number) => {
     paginationData.currentPage = value

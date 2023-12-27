@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "vue"
+import { computed ,watch} from "vue"
 import { useRoute } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/modules/app"
@@ -9,18 +9,33 @@ import SidebarItem from "./SidebarItem.vue"
 import Logo from "../Logo/index.vue"
 import { getCssVariableValue } from "@/utils"
 import { DeviceEnum } from "@/constants/app-key"
-
-const v3SidebarMenuBgColor = getCssVariableValue("--v3-sidebar-menu-bg-color")
-const v3SidebarMenuTextColor = getCssVariableValue("--v3-sidebar-menu-text-color")
-const v3SidebarMenuActiveTextColor = getCssVariableValue("--v3-sidebar-menu-active-text-color")
-
+import { sideBarDefaultExpandList } from '@/config/sidebar'
+import { useState } from "@/hooks/useState"
+import MGMLOGO from '/mgm-primary.png'
+import { useTheme } from "vuetify"
+import { onMounted } from "vue"
+import { watchEffect } from "vue"
+import { RouterLink } from "vue-router"
+import ThemeSwitcher from "@/components/ThemeSwitch/index.vue"
+import { ref } from "vue"
+const sidebarWidth = getCssVariableValue("--v3-sidebar-width").replace("px","")
+const sidebarWidthMobile = getCssVariableValue("--v3-sidebar-width-mobile").replace("px","")
 const route = useRoute()
 const appStore = useAppStore()
 const permissionStore = usePermissionStore()
 const settingsStore = useSettingsStore()
 
+const vuetifyTheme = useTheme()
+
 const { sidebar, device } = storeToRefs(appStore)
 const { layoutMode, showLogo } = storeToRefs(settingsStore)
+const permissionStoreRefs = storeToRefs(permissionStore)
+
+
+const { sidebarIndex, sidebarActiveName } = useState({
+  sidebarIndex: 0,
+  sidebarActiveName: 'Home'
+})
 
 const activeMenu = computed(() => {
   const {
@@ -30,56 +45,177 @@ const activeMenu = computed(() => {
   return activeMenu ? activeMenu : path
 })
 
-const isCollapse = computed(() => !sidebar.value.opened)
-const isLeft = computed(() => layoutMode.value === "left")
-const isTop = computed(() => layoutMode.value === "top")
+
+const isCollapse = computed(() => sidebar.value.opened)
+const mobileIsCollapse = computed(() => sidebar.value.mobileIsCollapse)
+const routes = computed(() => permissionStore.routes.filter(v=>!v.meta?.hidden) ) 
 const isMobile = computed(() => device.value === DeviceEnum.Mobile)
-const isLogo = computed(() => isLeft.value && showLogo.value)
-const backgroundColor = computed(() => (isLeft.value ? v3SidebarMenuBgColor : undefined))
-const textColor = computed(() => (isLeft.value ? v3SidebarMenuTextColor : undefined))
-const activeTextColor = computed(() => (isLeft.value ? v3SidebarMenuActiveTextColor : undefined))
-const sidebarMenuItemHeight = computed(() => {
-  return layoutMode.value !== "top"
-    ? getCssVariableValue("--v3-sidebar-menu-item-height")
-    : getCssVariableValue("--v3-navigationbar-height")
-})
-const sidebarMenuHoverBgColor = computed(() => {
-  return layoutMode.value !== "top" ? getCssVariableValue("--v3-sidebar-menu-hover-bg-color") : "transparent"
-})
 const tipLineWidth = computed(() => {
   return layoutMode.value !== "top" ? "2px" : "0px"
 })
+const clickSideBar = (e: any) => {
+  const flatRoutes = routes.value.flatMap(v=>v.children)
+  let index = 0;
+  for (let i = 0; i < flatRoutes.length; i++) {
+    const element = flatRoutes[i];
+    if(element?.name === e){
+      index = i;
+      break;
+    }
+  }
+  sidebarIndex.value = index;
+  sidebarActiveName.value = e;
+  return index;
+}
+
+onMounted(()=>{
+
+})
+
+watchEffect(()=>{
+  clickSideBar(route.name)
+})
+
+watch(mobileIsCollapse,(pre,next)=>{
+  if(pre== next) return
+  if(isMobile.value && !next){
+    sidebar.value.zindex = 0
+  }else{
+    setTimeout(()=>{
+      sidebar.value.zindex = 9999
+    },300)
+  }
+},{
+  deep: true
+})
+
+
+
 </script>
 
 <template>
-  <div :class="{ 'has-logo': isLogo }">
-    <Logo v-if="isLogo" :collapse="isCollapse" />
-    <el-scrollbar wrap-class="scrollbar-wrapper">
-      <el-menu
-        :default-active="activeMenu"
-        :collapse="isCollapse && !isTop"
-        :background-color="backgroundColor"
-        :text-color="textColor"
-        :active-text-color="activeTextColor"
-        :unique-opened="true"
-        :collapse-transition="false"
-        :mode="isTop && !isMobile ? 'horizontal' : 'vertical'"
-      >
+  <div style="height: 100%;width: auto;">
+    
+  <v-card v-if="!isMobile" style="height: 100%;">
+    <v-navigation-drawer
       
-        <SidebarItem
-          v-for="route in permissionStore.routes"
-          :key="route.path"
-          :item="route"
-          :base-path="route.path"
-          :is-collapse="isCollapse"
-          :is-top="isTop"
-        />
-      </el-menu>
-    </el-scrollbar>
+      style="border: 0;transition: all 0.35s;background-color: rgb(var(--v-surface-container));z-index: 9999;"
+      v-model="isCollapse"
+      :width="sidebarWidth"
+      :scrim="false"
+      :absolute="false"
+      permanent
+    >
+      <div v-if="routes.length!==0" style="padding: 20px;position: relative;height: 100%;display: flex;flex-direction: column;justify-content: space-between;">
+        <div class="nav-container">
+          <div class="logo">
+            <img :src="MGMLOGO" />
+            <h4>Membership Enrollment System</h4>
+          </div>
+          <v-divider/>
+          <div class="side-bar" v-for="(route,i) in routes"  style="display: flex;flex-direction: column;">
+            <div class="section-title"  >{{  route.meta?.sectionTitle }} </div>
+            
+            <div :class="{'active-nav': sidebarActiveName == routeLink.name}" @click="clickSideBar(routeLink.name)" class="section-nav" v-for="(routeLink,j) in route.children" >
+              <router-link class="route-container" :to="route.path =='/' ? '/'+routeLink.path : route.path + '/'+routeLink.path">
+                <v-icon :icon="routeLink.meta?.mdiIcon"></v-icon>
+                <div class="title">{{ routeLink.name?.toString()  }}</div>
+              </router-link>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-container">
+          <ThemeSwitcher/>
+          <div class="version">Version: 1.0.0 DEV</div>
+        </div>
+      </div>
+    </v-navigation-drawer>
+  </v-card>
+  <div  v-else style="height: 100%;">
+    <v-layout style="height: 100%;">
+      <v-navigation-drawer
+        style="border: 0;transition: all 0.35s;padding: 0px;z-index: 10002;background-color: rgb(var(--v-surface-container));"
+        v-model="sidebar.mobileIsCollapse"
+        temporary
+        :width="sidebarWidthMobile"
+      >
+      <div v-if="routes.length!==0" style="padding: 20px;position: relative;height: 100%;display: flex;flex-direction: column;justify-content: space-between;">
+        <div class="nav-container">
+          <div  class="logo">
+            <img :src="MGMLOGO" />
+            <h4 style="line-height:normal">Membership Enrollment System</h4>
+          </div>
+          <v-divider/>
+          <div class="side-bar" v-for="(route,i) in routes"  style="display: flex;flex-direction: column;">
+            <div class="section-title"  >{{  route.meta?.sectionTitle }} </div>
+            
+            <div :class="{'active-nav': sidebarActiveName == routeLink.name}" @click="clickSideBar(routeLink.name)" class="section-nav" v-for="(routeLink,j) in route.children" >
+              <router-link class="route-container" :to="route.path =='/' ? '/'+routeLink.path : route.path + '/'+routeLink.path">
+                <v-icon :icon="routeLink.meta?.mdiIcon"></v-icon>
+                <div class="title">{{ routeLink.name?.toString()  }}</div>
+              </router-link>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-container">
+          <ThemeSwitcher/>
+          <div class="version">Version: 1.0.0 DEV</div>
+        </div>
+      </div>
+      </v-navigation-drawer>
+    </v-layout>
+  </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+
+.side-bar{
+  //color: rgb(var(--v-theme-on-surface));
+  color: rgb(var(--v-theme-on-surface));;
+  .section-title{
+    padding: 16px;
+  }
+  .active-nav{
+    background-color: rgb(var(--v-theme-secondary-container));
+    color: rgb(var(--v-theme-on-secondary-container));
+    border-radius: 40px;
+  }
+  .section-nav{
+    .route-container{
+      display: flex;
+      cursor: pointer;
+      align-items: center;
+      gap: 12px;
+      align-self: stretch;
+      padding: 16px;
+      
+      .title{
+        transform: translateY(1px);
+      }
+    }
+    
+  }
+}
+
+.bottom-container{
+  bottom: 0;
+  width: calc(100% - 0px);
+  padding-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  justify-content: center;
+  .version{
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.active-nav{
+  //background-color: rgb(var(--v-theme-secondary-container));
+}
+
 @mixin tip-line {
   &::before {
     content: "";
@@ -92,75 +228,27 @@ const tipLineWidth = computed(() => {
   }
 }
 
-.has-logo {
-  .el-scrollbar {
-    // 多 1% 是为了在左侧模式时侧边栏最底部不显示 1px 左右的白色线条
-    height: calc(101% - var(--v3-header-height));
-  }
-}
+.logo {
+    display: flex;
+    padding: 16px 6px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    align-self: stretch;
+    flex-shrink: 0;
 
-.el-scrollbar {
-  // 多 5% 是为了在顶部模式时不显示垂直滚动条
-  height: 105%;
-  :deep(.scrollbar-wrapper) {
-    // 限制水平宽度
-    overflow-x: hidden !important;
-    .el-scrollbar__view {
-      height: 100%;
+    img {
+        width: auto;
+        height: 40px;
     }
-  }
-  // 滚动条
-  :deep(.el-scrollbar__bar) {
-    &.is-horizontal {
-      // 隐藏水平滚动条
-      display: none;
+
+    h4 {
+        align-self: stretch;
+        font-size: 15px;
+        line-height: 40px;
     }
-  }
 }
 
-.el-menu {
-  border: none;
-  min-height: 100%;
-  width: 100% !important;
-}
 
-:deep(.el-menu-item),
-:deep(.el-sub-menu__title),
-:deep(.el-sub-menu .el-menu-item),
-:deep(.el-menu--horizontal .el-menu-item) {
-  height: v-bind(sidebarMenuItemHeight);
-  line-height: v-bind(sidebarMenuItemHeight);
-  &.is-active,
-  &:hover {
-    background-color: v-bind(sidebarMenuHoverBgColor);
-  }
-  display: block;
-  * {
-    vertical-align: middle;
-  }
-}
 
-:deep(.el-sub-menu) {
-  &.is-active {
-    .el-sub-menu__title {
-      color: v-bind(activeTextColor) !important;
-    }
-  }
-}
-
-:deep(.el-menu-item) {
-  &.is-active {
-    @include tip-line;
-  }
-}
-
-.el-menu--collapse {
-  :deep(.el-sub-menu) {
-    &.is-active {
-      .el-sub-menu__title {
-        @include tip-line;
-      }
-    }
-  }
-}
 </style>

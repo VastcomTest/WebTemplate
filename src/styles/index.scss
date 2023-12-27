@@ -11,30 +11,25 @@
 // mixin
 @import "./mixins.scss";
 
-// 业务页面几乎都应该在根元素上挂载 class="app-container"，以保持页面美观
+@import "./custom.scss";
+
+// 自定義項
 .app-container {
   padding: 20px;
+  
 }
 
 .card{
-  border-radius: 15px;
+  border-radius: 10px;
   background-color: #FFF;
   padding: 20px;
-  padding-bottom: 10px;
   margin-bottom: 10px;
 
 }
 
-.app-title{
-  margin-bottom: 20px;
-  padding-left: 5px;
-  font-size: 25px;
-  font-weight: bold;
-  color: #606323;
-}
-
 html {
   height: 100%;
+  font-family: Roboto, sans-serif;
 }
 
 body {
@@ -42,14 +37,18 @@ body {
   background-color: var(--v3-body-bg-color);
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial,
-    sans-serif;
+  //font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial,sans-serif;
+  font-family: Roboto, sans-serif;
   @include scrollbar();
 }
+
 
 #app {
   height: 100%;
 }
+
+
+
 
 *,
 *:before,

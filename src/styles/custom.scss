@@ -1,0 +1,84 @@
+.app-title{
+  margin-bottom: 20px;
+  padding-left: 5px;
+  font-size: 25px;
+  font-weight: bold;
+  color: #606323;
+}
+
+#itable{
+  thead{
+    tr{
+      background-color: rgb(var(--v-theme-surface-container));
+      th{
+        font-weight: bolder;
+      }
+    }
+  }
+}
+
+.dialog-container{
+  padding: 20px;
+  width: 100%;
+  border-radius: 10px;
+  // display: flex;
+  // flex-direction: column;
+  // gap: 20px;
+  overflow: scroll;
+  background-color:  rgb(var(--v-surface-container));
+  
+  .header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h2{
+      margin-bottom: 20px;
+      font-size: 22px;
+      font-weight: 500;
+    }
+  }
+}
+
+.scrollbar{
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  // 滚动条上的滚动滑块
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #90939955;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #90939977;
+  }
+  &::-webkit-scrollbar-thumb:active {
+    background-color: #90939999;
+  }
+  // 当同时有垂直滚动条和水平滚动条时交汇的部分
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}
+
+.v-navigation-drawer__content{
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  // 滚动条上的滚动滑块
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: #90939955;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #90939977;
+  }
+  &::-webkit-scrollbar-thumb:active {
+    background-color: #90939999;
+  }
+  // 当同时有垂直滚动条和水平滚动条时交汇的部分
+  &::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}

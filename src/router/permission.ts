@@ -1,28 +1,31 @@
 import router from "@/router"
-import { Role, useUserStoreHook } from "@/store/modules/user"
+import { useUserStoreHook } from "@/store/modules/user"
 import { usePermissionStoreHook } from "@/store/modules/permission"
 import { ElMessage } from "element-plus"
-import { getToken } from "@/utils/cache/cookies"
 import asyncRouteSettings from "@/config/async-route"
 import isWhiteList from "@/config/white-list"
 import NProgress from "nprogress"
 import "nprogress/nprogress.css"
-
+import { LoginCallback, navigationGuard } from '@okta/okta-vue'
+import CacheKey from "@/constants/cache-key"
+import { IService } from "@/service/Index"
 NProgress.configure({ showSpinner: false })
-
-router.beforeEach(async (to, _from, next) => {
-  NProgress.start()
+//router.beforeEach(navigationGuard)
+router.beforeEach(async(to, _from, next) => {
+  
   const userStore = useUserStoreHook()
   const permissionStore = usePermissionStoreHook()
-  // 判断该用户是否登录
-  if (getToken()) {
-    if (userStore.roles.length === 0) {
-      // @ts-ignore
-      const role :Role = localStorage.getItem('role')
-      const roles:Role[] = [role]
-      userStore.setRoles(roles)
-      // 根据角色生成可访问的 Routes（可访问路由 = 常驻路由 + 有访问权限的动态路由）
-      permissionStore.setRoutes(roles)
+  const token = userStore.userAuth?.token
+  const refreshToken = localStorage.getItem(CacheKey.REFRESH_TOKEN)
+  if (refreshToken) {
+    if(!token){
+      const res = await userStore.refreshToken()
+      if(!res){
+        // refresh token expired
+        localStorage.removeItem(CacheKey.REFRESH_TOKEN)
+        next("/login")
+      }
+      permissionStore.setRoutes(userStore.userAuth?.permissions!)
       permissionStore.dynamicRoutes.forEach((route) => {
         router.addRoute(route)
       })
@@ -33,12 +36,9 @@ router.beforeEach(async (to, _from, next) => {
   } else {
     // 如果没有 Token
     if (isWhiteList(to)) {
-      // 如果在免登录的白名单中，则直接进入
       next()
     } else {
-      // 其他没有访问权限的页面将被重定向到登录页面
       next("/login")
-      NProgress.done()
     }
   }
 })
