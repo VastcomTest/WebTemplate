@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
-import { useRouter } from "vue-router"
+import { RouteRecordRaw, useRouter } from "vue-router"
 import { useUserStore } from "@/store/user"
 import { type FormInstance, FormRules, ElMessage } from "element-plus"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
@@ -11,6 +11,7 @@ import { IService } from "@/service/Index"
 import logo from '/mgm-primary.png'
 import useVuelidate from "@vuelidate/core"
 import { required } from "@vuelidate/validators"
+import { usePermissionStore } from "@/store/permission"
 const router = useRouter()
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 const loading = ref(false)
@@ -24,6 +25,7 @@ const rules = {
 }
 const v$ = useVuelidate(rules, loginFormData)
 const isPasswordVisible = ref(false)
+const permissionStore = usePermissionStore()
 const handleLogin = async () => {
   const valid = await v$.value.$validate()
   if (valid) {
@@ -31,6 +33,9 @@ const handleLogin = async () => {
     useUserStore()
       .login(loginFormData)
       .then(() => {
+        permissionStore.dynamicRoutes.forEach((route: RouteRecordRaw) => {
+          router.addRoute(route)
+        })
         router.push({ path: "/" })
       })
       .catch(() => {

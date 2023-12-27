@@ -26,8 +26,6 @@ router.beforeEach(async(to, _from, next) => {
         next("/login")
       }
       permissionStore.setRoutes(userStore.userAuth?.permissions!)
-      console.log(permissionStore.dynamicRoutes);
-      
       permissionStore.dynamicRoutes.forEach((route) => {
         router.addRoute(route)
       })
