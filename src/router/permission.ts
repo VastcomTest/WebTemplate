@@ -9,7 +9,7 @@ import "nprogress/nprogress.css"
 import { LoginCallback, navigationGuard } from '@okta/okta-vue'
 import CacheKey from "@/constants/cache-key"
 import { IService } from "@/service/Index"
-NProgress.configure({ showSpinner: false })
+//NProgress.configure({ showSpinner: false })
 //router.beforeEach(navigationGuard)
 router.beforeEach(async(to, _from, next) => {
   
@@ -43,6 +43,6 @@ router.beforeEach(async(to, _from, next) => {
   }
 })
 
-router.afterEach(() => {
-  NProgress.done()
-})
+// router.afterEach(() => {
+//   NProgress.done()
+// })

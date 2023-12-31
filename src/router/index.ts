@@ -48,13 +48,6 @@ export const constantRoutes: RouteRecordRaw[] = [
     alias: "/:pathMatch(.*)*"
   },
   {
-    path: "/result",
-    component: () => import("@/views/result/index.vue"),
-    meta: {
-      hidden: true
-    },
-  },
-  {
     path: "/pdf",
     component: () => import("@/views/pdf/index.vue"),
     meta: {
@@ -78,11 +71,6 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
 ]
 
-/**
- * 动态路由
- * 用来放置有权限 (Roles 属性) 的路由
- * 必须带有 Name 属性
- */
 export const asyncRoutes: RouteRecordRaw[] = [
   {
     path:'/',

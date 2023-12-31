@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed ,watch} from "vue"
+import { computed ,watch } from "vue"
 import { useRoute } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/app"
@@ -18,6 +18,7 @@ import { watchEffect } from "vue"
 import { RouterLink } from "vue-router"
 import ThemeSwitcher from "@/components/ThemeSwitch/index.vue"
 import { ref } from "vue"
+import { versionConfig } from '@/config/version'
 const sidebarWidth = getCssVariableValue("--v3-sidebar-width").replace("px","")
 const sidebarWidthMobile = getCssVariableValue("--v3-sidebar-width-mobile").replace("px","")
 const route = useRoute()
@@ -159,7 +160,7 @@ watch(mobileIsCollapse,(pre,next)=>{
         </div>
         <div class="bottom-container">
           <ThemeSwitcher/>
-          <div class="version">Version: 1.0.0 DEV</div>
+          <div class="version">{{ `Version: ${versionConfig.version} ${versionConfig.current}` }}</div>
         </div>
       </div>
       </v-navigation-drawer>

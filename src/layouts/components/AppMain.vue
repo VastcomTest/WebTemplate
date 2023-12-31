@@ -31,6 +31,7 @@ const key = computed(() => {
 
 .app-main {
   width: 100%;
+  transition: background-color 0.35s ease 0s;
   background-color: var(--v3-body-bg-color);
 }
 

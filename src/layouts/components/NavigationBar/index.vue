@@ -73,6 +73,7 @@ const logout = () => {
   display: flex;
   justify-content: space-between;
   background-color: var(--v-theme-surface);
+  transition: background-color 0.35s ease;
   .hamburger {
     display: flex;
     align-items: center;

@@ -16,7 +16,6 @@ import { PaymentMethodCached } from "@/types/entity/goodOrService"
 import CacheKey from "@/constants/cache-key"
 import { onUpdated } from "vue"
 import { onActivated } from "vue"
-import { applicationStatusSelectionForApprover } from "@/constants/selection"
 import { IService } from "@/service/Index"
 import { Group } from "@/models/group"
 import { Identity } from '@/enums/identity'

@@ -2,7 +2,6 @@ import { ListResponse } from '@/dtos/common/list-response';
 import { SuccessResponse } from '@/dtos/common/success-response';
 import { Permission } from '@/models/permission';
 import { Role } from '@/models/role';
-import { DocumentPermission } from '@/interface/document-permission';
 import { deleteI, get, post, put } from '@/api/request';
 
 export class RoleService {

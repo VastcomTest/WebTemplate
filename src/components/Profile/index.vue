@@ -18,17 +18,18 @@
   </table>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'Profile',
   data () {
     return {
-      claims: []
+      claims: [] as any[]
     }
   },
   async created () {
     const idToken = await this.$auth.tokenManager.get('idToken')
     console.log(idToken)
+    //@ts-ignore
     this.claims = Object.entries(idToken.claims).map(entry => ({ claim: entry[0], value: entry[1] }))
   }
 }

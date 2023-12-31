@@ -49,7 +49,7 @@ getBreadcrumb()
   <el-breadcrumb class="app-breadcrumb">
     <el-breadcrumb-item >
       <span class="route-name" >
-        {{ route.name != null ? route.name +" "+ route.meta.sectionTitle : route.meta.sectionTitle }}
+        {{ route.name != null ? route.name.toString() +" "+ route.meta.sectionTitle : route.meta.sectionTitle }}
       </span>
     </el-breadcrumb-item>
   </el-breadcrumb>

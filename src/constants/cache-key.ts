@@ -9,7 +9,6 @@ class CacheKey {
   static readonly VISITED_VIEWS = `${SYSTEM_NAME}-visited-views-key`
   static readonly CACHED_VIEWS = `${SYSTEM_NAME}-cached-views-key`
 
-  static readonly GOOD_OR_SERVICE = `${SYSTEM_NAME}-good-or-service`
   static readonly USERINFO = `${SYSTEM_NAME}-userinfo`
   static readonly REFRESH_TOKEN = `${SYSTEM_NAME}-refreshtoken-key`
 }
