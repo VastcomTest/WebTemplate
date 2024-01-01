@@ -11,6 +11,11 @@ class CacheKey {
 
   static readonly USERINFO = `${SYSTEM_NAME}-userinfo`
   static readonly REFRESH_TOKEN = `${SYSTEM_NAME}-refreshtoken-key`
+
+  // okta
+  static readonly OKTA_ID_TOKEN = `${SYSTEM_NAME}-okta-token`
+  // okta authstate
+  static readonly OKTA_AUTH_STATE = `${SYSTEM_NAME}-okta-auth-state`
 }
 
 export default CacheKey

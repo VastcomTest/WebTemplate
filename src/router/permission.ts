@@ -9,6 +9,7 @@ import "nprogress/nprogress.css"
 import { LoginCallback, navigationGuard } from '@okta/okta-vue'
 import CacheKey from "@/constants/cache-key"
 import { IService } from "@/service/Index"
+import useStore from "element-plus/es/components/table/src/store"
 //NProgress.configure({ showSpinner: false })
 //router.beforeEach(navigationGuard)
 router.beforeEach(async(to, _from, next) => {
@@ -23,7 +24,7 @@ router.beforeEach(async(to, _from, next) => {
       if(!res){
         // refresh token expired
         localStorage.removeItem(CacheKey.REFRESH_TOKEN)
-        next("/login")
+        next("/auth/login")
       }
       permissionStore.setRoutes(userStore.userAuth?.permissions!)
       permissionStore.dynamicRoutes.forEach((route) => {
@@ -38,7 +39,7 @@ router.beforeEach(async(to, _from, next) => {
     if (isWhiteList(to)) {
       next()
     } else {
-      next("/login")
+      next("/auth/login")
     }
   }
 })

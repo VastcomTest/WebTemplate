@@ -20,17 +20,25 @@ export const useUserStore = defineStore("user", () => {
   const tagsViewStore = useTagsViewStore()
   const settingsStore = useSettingsStore()
   const permissionStore = usePermissionStore()
-
   const setUserAuth = (temp: UserAuth) => userAuth.value = temp
-
+  
   const login = async ({ username, password }: {username:string,password:string}) => {
     const { data } = await IService.authservice.login({ username,password})
-    // const { data:res} = await IService.userservice.getUsersByCondition(username)
-    // const userInfo = res.data[0]
     userAuth.value = data
     permissionStore.setRoutes(data.permissions)
-    localStorage.setItem(CacheKey.USERINFO,JSON.stringify(data))
     localStorage.setItem(CacheKey.REFRESH_TOKEN,data.refreshToken)
+  }
+
+
+  const oktaLogin = async (oktaAccountId: string, accessToken: string) => {
+    try{
+      const { data } = await IService.authservice.oktaLogin(oktaAccountId, accessToken)
+      userAuth.value = data
+      permissionStore.setRoutes(data.permissions)
+      localStorage.setItem(CacheKey.REFRESH_TOKEN,data.refreshToken)
+    }catch(error:any){
+      throw error
+    }
   }
 
   const refreshToken = async ()=>{
@@ -47,11 +55,17 @@ export const useUserStore = defineStore("user", () => {
   }
 
 
-  const logout = () => {
+  const logout = async () => {
+    // check whether the user login with okta
+    // remove okta token
+    localStorage.removeItem(CacheKey.OKTA_ID_TOKEN)
+    // remove okta auth state
+    localStorage.removeItem(CacheKey.OKTA_AUTH_STATE)
+
     localStorage.removeItem(CacheKey.REFRESH_TOKEN)
+    //await IService.authservice.logout()
     userAuth.value = undefined
     resetRouter()
-    _resetTagsView()
   }
   /** 重置 Visited Views 和 Cached Views */
   const _resetTagsView = () => {
@@ -61,7 +75,7 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
-  return { userAuth,refreshToken,login, logout ,setUserAuth}
+  return { userAuth,oktaLogin,refreshToken,login, logout ,setUserAuth}
 })
 
 /** 在 setup 外使用 */

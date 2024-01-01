@@ -24,27 +24,17 @@ export class AuthService {
         })
   }
 
-  // oktaLogin(oktaAccountId: string, accessToken: string): Observable<UserAuth> {
-  //   return this.httpClient
-  //     .post<UserAuth>(
-  //       `${environment.apiUrl}${this.authTemplate}/login/okta`,
-  //       {
-  //         oktaAccountId,
-  //         accessToken,
-  //         platform: environment.platform,
-  //         browser: this.detectBrowserName(),
-  //       },
-  //       { withCredentials: true }
-  //     )
-  //     .pipe(
-  //       map((res) => {
-  //         const userAuth: UserAuth = res;
-  //         this.userAuthSubject.next(userAuth);
-  //         this.startRefreshTokenTimer();
-  //         return userAuth;
-  //       })
-  //     );
-  // }
+  oktaLogin(oktaAccountId: string, accessToken: string) {
+    return post<UserAuth>(
+        `${this.authTemplate}/login/okta`,
+        {
+          oktaAccountId,
+          accessToken,
+          platform: "Web",
+          browser: this.detectBrowserName(),
+        }
+      )
+  }
 
   // changePassword({ username, oldPassword, newPassword, confirmPassword }: any) {
   //   return this.httpClient.post<SuccessResponse>(
@@ -86,13 +76,6 @@ export class AuthService {
       );
   }
 
-
-  /**
-   * Stop the refresh token timer when user logout
-   */
-  stopRefreshTokenTimer() {
-    clearTimeout(this.refreshTokenTimeout);
-  }
 
   detectBrowserName() {
     const agent = window.navigator.userAgent.toLowerCase();

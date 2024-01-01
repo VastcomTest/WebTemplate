@@ -1,10 +1,11 @@
+import apiConfig from '@/config/api'
 import CacheKey from '@/constants/cache-key'
 import { useUserStoreHook } from '@/store/user'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { get } from 'lodash-es'
-const baseUrl = 'https://vastcom-mgm.azurewebsites.net'
-
+//const baseUrl = 'https://vastcom-mgm.azurewebsites.net'
+const baseUrl = apiConfig.apiUrl
 const http = axios.create({
   baseURL: baseUrl,
   timeout: 3000,

@@ -24,7 +24,6 @@ import { loadVuetify} from "./plugins/vuetify"
 
 const app = createApp(App)
 const oktaAuth = new OktaAuth(sampleConfig.oidc)
-
 loadPlugins(app)
 loadSvg(app)
 loadDirectives(app)

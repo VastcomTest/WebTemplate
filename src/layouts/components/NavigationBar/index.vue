@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "vue"
+import { ComponentInternalInstance, computed } from "vue"
 import { useRouter } from "vue-router"
 import { storeToRefs } from "pinia"
 import { useAppStore } from "@/store/app"
@@ -14,28 +14,37 @@ import Screenfull from "@/components/Screenfull/index.vue"
 import Notify from "@/components/Notify/index.vue"
 import { DeviceEnum } from "@/constants/app-key"
 import { useTagsViewStore } from "@/store/tags-view"
+import { getCurrentInstance } from "vue"
+import { use } from "vxe-table"
+
 const router = useRouter()
 const appStore = useAppStore()
 const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 const tabsStore = useTagsViewStore()
+const { proxy } = getCurrentInstance() as ComponentInternalInstance
 const { sidebar, device } = storeToRefs(appStore)
 const { layoutMode, showNotify, showThemeSwitch, showScreenfull } = storeToRefs(settingsStore)
-
+const { userAuth } = storeToRefs(userStore)
 const isTop = computed(() => layoutMode.value === "top")
 const isMobile = computed(() => device.value === DeviceEnum.Mobile)
-
 /** 切换侧边栏 */
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
 }
 
 /** 登出 */
-const logout = () => {
+const logout = async () => {
+  let accessToken = proxy?.$auth.getAccessToken()
+  if(accessToken){
+    // const idToken = proxy?.$auth.tokenManager.getTokensSync()?.idToken
+    // const authState = proxy?.$auth.authStateManager.getAuthState()
+    proxy?.$auth.signOut()
+    userStore.logout()
+    return
+  }
   userStore.logout()
-  tabsStore.delAllVisitedViews()
-  tabsStore.delAllCachedViews()
-  router.push("/login")
+  router.push("/auth/login")
 
 }
 </script>
@@ -47,21 +56,27 @@ const logout = () => {
     <Sidebar v-if="isTop && !isMobile" class="sidebar" />
     <div class="right-menu">
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
-      <!-- <ThemeSwitch   class="right-menu-item" /> -->
-      <!-- <Notify v-if="showNotify" class="right-menu-item" /> -->
-      <el-dropdown class="right-menu-item">
-        <div class="right-menu-avatar">
-          <el-avatar :icon="UserFilled" :size="30" />
-          <!-- <span>{{ userStore.userAuth?.firstName }}</span> -->
-        </div>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item divided @click="logout">
-              <span style="display: block">Logout</span>
-            </el-dropdown-item>
-          </el-dropdown-menu>
+      <v-menu>
+        <template v-slot:activator="{ props }">
+          <v-btn
+            class="ma-2"
+            variant="text"
+            icon="mdi-account-circle"
+            v-bind="props"
+          />
         </template>
-      </el-dropdown>
+          <v-card elevation="10" style="padding: 15px;display: flex;flex-direction: column;gap: 5px;">
+            <h3 style="text-align: left;">Admin MES</h3>
+            <div style="margin-bottom: 10px;">{{ userAuth?.email }}</div>
+            <div @click="logout" 
+            style="gap: 0px;
+            cursor: pointer;;display: flex;
+            ">
+              <v-icon icon="mdi-logout"></v-icon>
+              <div>Logout</div>
+            </div>
+          </v-card>
+      </v-menu>
     </div>
   </div>
 </template>

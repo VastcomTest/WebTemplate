@@ -19,7 +19,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/login/callback',
+    path: '/auth/callback/okta',
     meta:{
       hidden: true
     },
@@ -55,7 +55,7 @@ export const constantRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: "/login",
+    path: "/auth/login",
     component: () => import("@/views/login/index.vue"),
     meta: {
       hidden: true
@@ -85,7 +85,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
         name:"Home",
         meta:{
           mdiIcon:'mdi-history',
-          roles:['WhiteSlip.Browser.Read']
+          //roles:['WhiteSlip.Browser.Read']
         }
       }
     ]

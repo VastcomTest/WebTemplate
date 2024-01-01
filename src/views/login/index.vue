@@ -26,6 +26,7 @@ const rules = {
 const v$ = useVuelidate(rules, loginFormData)
 const isPasswordVisible = ref(false)
 const permissionStore = usePermissionStore()
+const userStore = useUserStore()
 const handleLogin = async () => {
   const valid = await v$.value.$validate()
   if (valid) {
@@ -51,9 +52,7 @@ const handleLogin = async () => {
 
 
 const loginWithOkta = async ()=>{
-  console.log(window.location.origin);
-  
-  await proxy?.$auth.signInWithRedirect({ originalUri: '/' })
+  await proxy?.$auth.signInWithRedirect({ originalUri: '/profile' })
   
 }
 
@@ -124,19 +123,20 @@ const loginWithOkta = async ()=>{
               <VBtn
                 block
                 color="primary"
-                style="border-radius: 5px;margin-bottom: 0px;"
+                style="border-radius: 5px;margin-bottom: 15px;"
                 @click="handleLogin"
               >
                 Local Login
               </VBtn>
 
-              <!-- <VBtn
+              <VBtn
                 block
                 color="primary"
                 style="border-radius: 5px;"
+                @click="loginWithOkta"
               >
                 OKTA Login
-              </VBtn> -->
+              </VBtn>
             </VCol>
 
             <!-- create account -->
