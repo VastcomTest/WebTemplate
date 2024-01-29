@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useState } from '@/hooks/useState';
-import { IService } from '@/service/Index';
+import { IService } from '@/service';
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router';
 import { random } from 'xe-utils';
@@ -69,3 +69,4 @@ onMounted(() => {
   
 }
 </style>
+@/service

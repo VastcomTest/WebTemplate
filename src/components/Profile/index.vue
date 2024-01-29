@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import CacheKey from '@/constants/cache-key'
-import { IService } from '@/service/Index'
+import { IService } from '@/service'
 import { usePermissionStore } from '@/store/permission'
 import { useUserStoreHook } from '@/store/user'
 import { RouteRecordRaw } from 'vue-router'
@@ -129,4 +129,4 @@ export default {
     transform: rotate(1turn);
   }
 }
-</style>
+</style>@/service

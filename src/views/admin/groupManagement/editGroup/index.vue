@@ -3,7 +3,7 @@ import { toRefs, ref, watchEffect, onMounted, Ref, reactive, watch, computed} fr
 import {useState , useProxyState } from '@/hooks/useState';
 import { Group } from '@/models/group';
 import { Minus, Plus, Search, Upload } from "@element-plus/icons-vue"
-import { IService } from '@/service/Index';
+import { IService } from '@/service';
 import { useShared } from '../shared';
 import { storeToRefs } from 'pinia';
 import { ElMessage } from 'element-plus';
@@ -286,4 +286,4 @@ onMounted(async()=>{
 </template>
 
 <style lang='scss' scoped>
-</style>
+</style>@/service

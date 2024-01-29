@@ -1,7 +1,7 @@
 import { useProxyState, useState } from "@/hooks/useState";
 import { Group } from "@/models/group";
 import { Role } from "@/models/role";
-import { IService } from "@/service/Index";
+import { IService } from "@/service";
 import { defineStore } from "pinia";
 
 export const useShared = defineStore('share-group',()=>{

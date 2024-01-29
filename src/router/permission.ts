@@ -8,7 +8,7 @@ import NProgress from "nprogress"
 import "nprogress/nprogress.css"
 import { LoginCallback, navigationGuard } from '@okta/okta-vue'
 import CacheKey from "@/constants/cache-key"
-import { IService } from "@/service/Index"
+import { IService } from "@/service"
 import useStore from "element-plus/es/components/table/src/store"
 //NProgress.configure({ showSpinner: false })
 //router.beforeEach(navigationGuard)

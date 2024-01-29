@@ -7,7 +7,7 @@ import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue"
 import { getCurrentInstance } from "vue"
 import { ComponentInternalInstance } from "vue"
-import { IService } from "@/service/Index"
+import { IService } from "@/service"
 import logo from '/mgm-primary.png'
 import useVuelidate from "@vuelidate/core"
 import { required } from "@vuelidate/validators"
@@ -217,3 +217,4 @@ const loginWithOkta = async ()=>{
 }
 
 </style>
+@/service

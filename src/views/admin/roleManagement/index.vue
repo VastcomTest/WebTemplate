@@ -16,7 +16,7 @@ import { storeToRefs } from "pinia"
 import CacheKey from "@/constants/cache-key"
 import { onUpdated } from "vue"
 import { onActivated } from "vue"
-import { IService } from "@/service/Index"
+import { IService } from "@/service"
 import { Group } from "@/models/group"
 import { Identity } from '@/enums/identity'
 import { getFullTime } from "@/utils/Date"
@@ -260,4 +260,4 @@ onMounted(async() => {
   justify-content: flex-end;
 }
 </style>
-@/utils/local-storage
+@/utils/local-storage@/service
