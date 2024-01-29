@@ -21,7 +21,6 @@ import { OktaAuth } from '@okta/okta-auth-js'
 import OktaVue from '@okta/okta-vue'
 import sampleConfig from '@/config/okta'
 import { loadVuetify} from "./plugins/vuetify"
-
 const app = createApp(App)
 const oktaAuth = new OktaAuth(sampleConfig.oidc)
 loadPlugins(app)

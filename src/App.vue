@@ -5,8 +5,7 @@ import { resetConfigLayout } from "@/utils"
 import { ElNotification } from "element-plus"
 // 将 Element Plus 的语言设置为中文
 import zhCn from "element-plus/es/locale/lang/zh-cn"
-// @ts-ignore
-import SnackBar from '@/components/SnackBar/index.vue'
+import SnackBar from '@/components/Snackbar/index.vue'
 // const { initTheme } = useTheme()
 
 // /** 初始化主题 */

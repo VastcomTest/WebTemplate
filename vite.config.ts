@@ -7,18 +7,22 @@ import vueJsx from "@vitejs/plugin-vue-jsx"
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons"
 import svgLoader from "vite-svg-loader"
 import UnoCSS from "unocss/vite"
+import { fileURLToPath } from "url"
 
 /** 配置项文档：https://cn.vitejs.dev/config */
 export default (configEnv: ConfigEnv): UserConfigExport => {
   const viteEnv = loadEnv(configEnv.mode, process.cwd()) as ImportMetaEnv
   const { VITE_PUBLIC_PATH } = viteEnv
+  
+  
   return {
     /** 打包时根据实际情况修改 base */
     base: VITE_PUBLIC_PATH,
     resolve: {
       alias: {
         /** @ 符号指向 src 目录 */
-        "@": resolve(__dirname, "./src")
+        "@": resolve(__dirname,"./src")
+        //"@": fileURLToPath(import.meta.url)
       }
     },
     server: {

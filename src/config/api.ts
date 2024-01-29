@@ -1,8 +1,8 @@
 const apiConfig = {
   // local
-  apiUrl: 'https://localhost:7443/',
+  //apiUrl: 'https://localhost:7443/',
   // cloud
-  //apiUrl:'https://vastcom-mgm.azurewebsites.net'
+  apiUrl:'https://vastcom-mgm.azurewebsites.net'
 }
 
 export default apiConfig

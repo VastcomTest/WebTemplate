@@ -11,7 +11,6 @@ import { DeviceEnum } from '@/constants/app-key';
 import { useAppStore } from '@/store/app';
 import useVuelidate from '@vuelidate/core';
 import { required, email } from '@vuelidate/validators';
-import { Identify } from '@okta/okta-auth-js/lib/idx/remediators';
 import { Identity } from '@/enums/identity';
 import { PaginationData } from '@/hooks/usePagination';
 interface indexProps {
