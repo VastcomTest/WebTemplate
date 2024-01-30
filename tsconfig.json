@@ -10,7 +10,6 @@
     "jsx": "preserve",
     "importHelpers": true,
     "experimentalDecorators": true,
-    "allowImportingTsExtensions": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "resolveJsonModule": true,

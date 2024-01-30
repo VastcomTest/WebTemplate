@@ -12,6 +12,7 @@ import logo from '/mgm-primary.png'
 import useVuelidate from "@vuelidate/core"
 import { required } from "@vuelidate/validators"
 import { usePermissionStore } from "@/store/permission"
+import { versionConfig } from "@/config/version"
 const router = useRouter()
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 const loading = ref(false)
@@ -153,7 +154,7 @@ const loginWithOkta = async ()=>{
               class="d-flex align-center"
             >
               <VDivider />
-              <span class="mx-4">V1.0.0</span>
+              <span class="mx-4">{{ 'V'+versionConfig.version }}</span>
               <VDivider />
             </VCol>
 

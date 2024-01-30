@@ -127,7 +127,7 @@ watch(mobileIsCollapse,(pre,next)=>{
         </div>
         <div class="bottom-container">
           <ThemeSwitcher/>
-          <div class="version">Version: 1.0.0 DEV</div>
+          <div class="version">Version: {{ versionConfig.version }} DEV</div>
         </div>
       </div>
     </v-navigation-drawer>
@@ -160,7 +160,7 @@ watch(mobileIsCollapse,(pre,next)=>{
         </div>
         <div class="bottom-container">
           <ThemeSwitcher/>
-          <div class="version">{{ `Version: ${versionConfig.version} ${versionConfig.current}` }}</div>
+          <div class="version">{{ `Version:  ${versionConfig.current}` }}</div>
         </div>
       </div>
       </v-navigation-drawer>
