@@ -73,14 +73,14 @@ const loginWithOkta = async ()=>{
         <template #prepend>
           <div style="display: flex;flex-direction: column;align-items: center;">
             <div>
-              <img
+              <!-- <img
               class="mr-2"
               :src="logo"
               alt="logo"
               width="64"
               height="64"
               
-            />
+            /> -->
           </div>
             <span class="font-weight-bold text-h4">VastComTech</span>
           </div>
