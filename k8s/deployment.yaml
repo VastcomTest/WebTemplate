@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pipelines-web
+  name: pipelines-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pipelines-web
+  template:
+    metadata:
+      labels:
+        app: pipelines-web
+    spec:
+      containers:
+        - image: quay.io/openshift-pipeline/web:latest
+          imagePullPolicy: Always
+          name: pipelines-web
+          ports:
+            - containerPort: 9000
+              protocol: TCP
