@@ -19,5 +19,5 @@ spec:
           imagePullPolicy: Always
           name: pipelines-web
           ports:
-            - containerPort: 9000
+            - containerPort: 8080
               protocol: TCP
