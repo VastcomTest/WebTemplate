@@ -110,8 +110,8 @@ watch(mobileIsCollapse,(pre,next)=>{
       <div v-if="routes.length!==0" style="padding: 20px;position: relative;height: 100%;display: flex;flex-direction: column;justify-content: space-between;">
         <div class="nav-container">
           <div class="logo">
-            <img :src="MGMLOGO" />
-            <h4>Membership Enrollment System</h4>
+            <!-- <img :src="MGMLOGO" /> -->
+            <h4>VastcomTech</h4>
           </div>
           <v-divider/>
           <div class="side-bar" v-for="(route,i) in routes"  style="display: flex;flex-direction: column;">
@@ -143,8 +143,8 @@ watch(mobileIsCollapse,(pre,next)=>{
       <div v-if="routes.length!==0" style="padding: 20px;position: relative;height: 100%;display: flex;flex-direction: column;justify-content: space-between;">
         <div class="nav-container">
           <div  class="logo">
-            <img :src="MGMLOGO" />
-            <h4 style="line-height:normal">Membership Enrollment System</h4>
+            <!-- <img :src="MGMLOGO" /> -->
+            <h4 style="line-height:normal">VastcomTech</h4>
           </div>
           <v-divider/>
           <div class="side-bar" v-for="(route,i) in routes"  style="display: flex;flex-direction: column;">

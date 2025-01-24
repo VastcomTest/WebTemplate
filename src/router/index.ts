@@ -77,7 +77,7 @@ export const asyncRoutes: RouteRecordRaw[] = [
     redirect:'/userinfo',
     component:Layouts,
     meta:{
-      sectionTitle:"Membership"
+      sectionTitle:"Details"
     },
     children:[{
         path:'userinfo',
