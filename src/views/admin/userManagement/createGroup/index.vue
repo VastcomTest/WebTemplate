@@ -107,18 +107,18 @@ onMounted(()=>{
       <h2>Create User</h2>
       <v-btn color="primary" @click="closeDialog"  icon="mdi-close"></v-btn>
     </div>
-    <v-card color="surface-container">
+    <v-card color="on-secondary-container">
       <v-tabs
         fixed-tabs
         v-model="activeName"
-        bg-color="surface-container"
+        bg-color="secondary-container"
       >
         <v-tab color="primary" style="max-width: 1000px;" value="Create">
           <v-icon size="x-large" style="margin-right: 10px;">mdi-form</v-icon>
           <div>Form</div>
         </v-tab>
       </v-tabs>
-      <v-card-text>
+      <v-card-text >
         <v-window  v-model="activeName">
           <v-window-item value="Create">
             <form >

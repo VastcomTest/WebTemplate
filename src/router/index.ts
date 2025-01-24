@@ -77,12 +77,12 @@ export const asyncRoutes: RouteRecordRaw[] = [
     redirect:'/userinfo',
     component:Layouts,
     meta:{
-      sectionTitle:"Membership"
+      sectionTitle:"ID/Passport"
     },
     children:[{
         path:'userinfo',
         component:()=>import("@/views/userInfo/index.vue"),
-        name:"Home",
+        name:"Reader",
         meta:{
           mdiIcon:'mdi-history',
           //roles:['WhiteSlip.Browser.Read']

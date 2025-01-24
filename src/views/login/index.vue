@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { reactive, ref } from "vue"
-import { RouteRecordRaw, useRouter } from "vue-router"
+import { RouteRecordRaw, useRoute, useRouter } from "vue-router"
 import { useUserStore } from "@/store/user"
 import { type FormInstance, FormRules, ElMessage } from "element-plus"
 import { User, Lock, Key, Picture, Loading } from "@element-plus/icons-vue"
@@ -14,6 +14,7 @@ import { required } from "@vuelidate/validators"
 import { usePermissionStore } from "@/store/permission"
 import { versionConfig } from "@/config/version"
 const router = useRouter()
+const route = useRoute()
 const { proxy } = getCurrentInstance() as ComponentInternalInstance
 const loading = ref(false)
 const loginFormData = reactive({
@@ -38,7 +39,30 @@ const handleLogin = async () => {
         permissionStore.dynamicRoutes.forEach((route: RouteRecordRaw) => {
           router.addRoute(route)
         })
-        router.push({ path: "/" })
+        console.log(router.currentRoute.value.query);
+        if (router.currentRoute.value.query.redirect){
+          let url = router.currentRoute.value.query.redirect as string
+          // catch params from url
+          if(url.includes("?")){
+            let params = url.split("?")[1]
+            let paramArray = params.split("&")
+            let paramObj = {}
+            paramArray.forEach((param)=>{
+              let key = param.split("=")[0]
+              let value = param.split("=")[1]
+              //@ts-ignore
+              paramObj[key] = value
+            })
+            router.push({ path: router.currentRoute.value.query.redirect as string, query: paramObj }) 
+          }
+          else{
+            router.push({ path: router.currentRoute.value.query.redirect as string  }) 
+          }
+          
+        }
+        else{
+          router.push({ path: "/" })
+        }
       })
       .catch(() => {
         loginFormData.password = ""

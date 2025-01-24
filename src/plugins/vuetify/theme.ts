@@ -7,6 +7,8 @@ function getVar(name: string) {
   let color = themeRows.find(v=>v.includes(str))?.split(":")[1].trim()
   return color
 }
+console.log(getVar('primary-light'));
+
 const theme = {
   defaultTheme: 'light',
   themes: {

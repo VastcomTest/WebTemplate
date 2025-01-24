@@ -111,7 +111,7 @@ watch(mobileIsCollapse,(pre,next)=>{
         <div class="nav-container">
           <div class="logo">
             <img :src="MGMLOGO" />
-            <h4>Membership Enrollment System</h4>
+            <h4>ID Card Reader</h4>
           </div>
           <v-divider/>
           <div class="side-bar" v-for="(route,i) in routes"  style="display: flex;flex-direction: column;">
@@ -144,7 +144,7 @@ watch(mobileIsCollapse,(pre,next)=>{
         <div class="nav-container">
           <div  class="logo">
             <img :src="MGMLOGO" />
-            <h4 style="line-height:normal">Membership Enrollment System</h4>
+            <h4 style="line-height:normal">ID Card Reader</h4>
           </div>
           <v-divider/>
           <div class="side-bar" v-for="(route,i) in routes"  style="display: flex;flex-direction: column;">
